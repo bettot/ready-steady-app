@@ -5,7 +5,9 @@
 A self-contained, tappable mobile prototype. No backend, no accounts, no app stores —
 everything runs in the browser and saves your taps locally on the device (localStorage).
 
-- **Tap it on a phone:** https://claude.ai/code/artifact/5f105b33-299c-4265-991f-9ff950fbf1cc
+- **Tap it on a phone:** https://bettot.github.io/ready-steady-app/ (tip: "Add to Home Screen" makes it feel installed)
+- **Backup link (same app):** https://claude.ai/code/artifact/5f105b33-299c-4265-991f-9ff950fbf1cc
+- **Code lives at:** https://github.com/bettot/ready-steady-app (public)
 - **Or open locally:** double-click `index.html` (same app; `ready-steady-app.html` is the
   source file the artifact is published from — edit that one, `index.html` is a generated wrapper).
 

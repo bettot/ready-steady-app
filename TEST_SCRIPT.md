@@ -1,6 +1,6 @@
 # Friend-test script — Ready & Steady app prototype
-Send with the app link: https://claude.ai/code/artifact/5f105b33-299c-4265-991f-9ff950fbf1cc
-(or the GitHub Pages link once published)
+Send with the app link: **https://bettot.github.io/ready-steady-app/**
+(backup link, same app: https://claude.ai/code/artifact/5f105b33-299c-4265-991f-9ff950fbf1cc)
 
 ---
 
