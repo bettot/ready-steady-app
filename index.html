@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3eadb">
+</head>
+<body>
+<title>Ready &amp; Steady — App Prototype</title>
+<style>
+  :root {
+    --cream: #f3eadb;
+    --cream-deep: #eadfca;
+    --cream-card: #f7efe2;
+    --ink: #202020;
+    --ink-soft: #4a463f;
+    --ink-faint: #7a7368;
+    --slate: #323232;
+    --slate-deep: #262624;
+    --marmalade: #c17817;
+    --toffee: #8a5a10;
+    --dill: #55663d;
+    --dill-soft: #e2e4d2;
+    --paprika: #9c4a26;
+    --paprika-soft: #efdcd0;
+    --amber-soft: #f0e2c6;
+    --line: rgba(32,32,32,.8);
+    --line-faint: rgba(32,32,32,.16);
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream-deep); }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    font-size: 15.5px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* ——— phone shell: edge-to-edge on mobile, framed on desktop ——— */
+  .shell { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; }
+  .app {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    height: 100vh; height: 100dvh;
+    overflow: hidden;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+  }
+  @media (min-width: 500px) {
+    .shell { padding: 28px 0 40px; }
+    .app {
+      min-height: 0;
+      height: 860px; max-height: calc(100vh - 68px);
+      border: 2px solid var(--ink);
+      border-radius: 34px;
+      overflow: hidden;
+      box-shadow: 10px 12px 0 rgba(32,32,32,.12);
+    }
+  }
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 18px 96px;
+    scroll-behavior: smooth;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; animation: rise .28s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ——— typography ——— */
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 27px; line-height: 1.15; letter-spacing: -.01em; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 20px; line-height: 1.2; }
+  .sub { color: var(--ink-soft); font-size: 14.5px; margin-top: 5px; }
+  .eyebrow {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .14em;
+    color: var(--toffee); font-weight: 600;
+  }
+  .hand { font-family: var(--serif); font-style: italic; }
+  .squiggle-wrap { display: inline-block; }
+  .squiggle {
+    display: block; width: 74px; height: 7px; margin-top: 4px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 74 7"><path d="M1 4.5 C 7 1, 12 6.5, 18 3.5 S 30 1.5, 36 4 S 48 6.5, 54 3 S 68 2, 73 4.5" fill="none" stroke="%23c17817" stroke-width="2" stroke-linecap="round"/></svg>') no-repeat;
+  }
+
+  /* ——— header ——— */
+  .app-head { padding: 20px 18px 0; display: flex; align-items: flex-start; justify-content: space-between; }
+  .app-head .logo svg { width: 92px; height: auto; display: block; }
+  .datestamp { text-align: right; font-size: 12.5px; color: var(--ink-soft); line-height: 1.35; padding-top: 4px; }
+  .datestamp strong { display: block; font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--ink); font-weight: 400; }
+
+  /* ——— cards ——— */
+  .card {
+    background: var(--cream-card);
+    border: 1.5px solid var(--ink);
+    border-radius: 14px;
+    padding: 18px 16px;
+    margin-top: 16px;
+  }
+  .card.quiet { border-color: var(--line-faint); background: transparent; }
+  .card-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .card-label .eyebrow { color: var(--toffee); }
+  .linklike {
+    background: none; border: none; font: inherit; color: var(--toffee);
+    font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 0;
+  }
+  .linklike:hover { text-decoration: underline; }
+
+  /* ——— the jar shelf (signature) ——— */
+  .shelf-days { font-family: var(--serif); font-size: 46px; line-height: 1; letter-spacing: -.01em; }
+  .shelf-days em { font-style: italic; font-size: 25px; letter-spacing: 0; }
+  .shelf-lead { display: block; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink-soft); margin-bottom: 2px; }
+  .shelf-note { margin-top: 6px; font-size: 14px; color: var(--ink-soft); }
+  .shelf-note b { color: var(--ink); font-weight: 600; }
+  .jarshelf { margin-top: 14px; }
+  .jarshelf svg { width: 100%; height: auto; display: block; }
+  .jar-fill { transition: height .9s cubic-bezier(.3,.9,.4,1), y .9s cubic-bezier(.3,.9,.4,1); }
+  .shelf-marks { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
+  .shelf-marks .hit { color: var(--dill); font-weight: 600; }
+
+  /* ——— category status rows ——— */
+  .catrows { margin-top: 14px; border-top: 1.5px dashed var(--line-faint); padding-top: 10px; display: grid; gap: 7px; }
+  .catrow { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .catrow .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dot.ok { background: var(--dill); }
+  .dot.mid { background: var(--marmalade); }
+  .dot.due { background: var(--paprika); }
+  .catrow .cat-name { width: 108px; flex: none; color: var(--ink-soft); }
+  .catrow .cat-val { font-weight: 600; }
+  .catrow .cat-extra { color: var(--ink-faint); font-size: 12.5px; }
+
+  /* ——— use soon list ——— */
+  .usesoon-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 0; border-bottom: 1.5px dashed var(--line-faint);
+  }
+  .usesoon-item:last-child { border-bottom: none; }
+  .usesoon-item .name { font-weight: 600; font-size: 14.5px; }
+  .usesoon-item .when { font-size: 12.5px; color: var(--ink-soft); }
+  .payoff { margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 14.5px; color: var(--ink-soft); }
+
+  /* ——— pills ——— */
+  .pill {
+    flex: none; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    padding: 4px 9px; border-radius: 99px; white-space: nowrap;
+  }
+  .pill.fresh { background: var(--dill-soft); color: var(--dill); }
+  .pill.soon { background: var(--amber-soft); color: var(--toffee); }
+  .pill.due { background: var(--paprika-soft); color: var(--paprika); }
+  .pill.tag { background: transparent; border: 1px solid var(--line-faint); color: var(--ink-soft); font-weight: 600; }
+
+  /* ——— buttons ——— */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    text-decoration: none;
+    font: 600 15px var(--sans); color: var(--cream);
+    background: var(--ink); border: 1.5px solid var(--ink);
+    border-radius: 12px; padding: 13px 18px; cursor: pointer;
+    width: 100%; transition: transform .08s ease;
+  }
+  .btn:active { transform: scale(.985); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.warm { background: var(--marmalade); border-color: var(--marmalade); color: #fff8ec; }
+  .btn.slim { padding: 9px 14px; width: auto; font-size: 13.5px; border-radius: 10px; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+    outline: 2.5px solid var(--marmalade); outline-offset: 2px;
+  }
+
+  /* ——— pantry ——— */
+  .statstrip { display: flex; gap: 0; margin-top: 14px; border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; background: var(--cream-card); }
+  .stat { flex: 1; padding: 10px 6px; text-align: center; }
+  .stat + .stat { border-left: 1.5px solid var(--line-faint); }
+  .stat .n { font-family: var(--serif); font-size: 19px; display: block; line-height: 1.1; }
+  .stat .l { font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-faint); }
+  .chips { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .chip {
+    font: 600 13px var(--sans); color: var(--ink-soft);
+    background: transparent; border: 1.5px solid var(--line-faint);
+    padding: 7px 14px; border-radius: 99px; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .grocery { list-style: none; margin-top: 6px; }
+  .grocery li { border-bottom: 1.5px dashed var(--line-faint); }
+  .grocery li:last-child { border-bottom: none; }
+  .item-row {
+    width: 100%; background: none; border: none; font: inherit; text-align: left; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; padding: 12px 2px; color: var(--ink);
+  }
+  .item-main { flex: 1; min-width: 0; }
+  .item-name { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .item-meta { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .qty { font-family: var(--serif); font-style: italic; color: var(--ink-faint); font-size: 14px; }
+  .group-head { margin-top: 18px; display: flex; align-items: center; gap: 10px; }
+  .group-head .eyebrow { color: var(--ink-faint); }
+  .group-head::after { content: ""; flex: 1; border-top: 1.5px dashed var(--line-faint); }
+  .addbar { position: sticky; bottom: 8px; margin-top: 18px; }
+
+  /* ——— checklists ——— */
+  .score { font-family: var(--serif); font-size: 34px; line-height: 1; }
+  .score em { font-style: italic; font-size: 17px; color: var(--ink-soft); }
+  .tier { margin-top: 6px; font-size: 14px; color: var(--ink-soft); }
+  .tier b { color: var(--ink); }
+  .progress-line { height: 7px; border: 1.5px solid var(--ink); border-radius: 99px; margin-top: 12px; overflow: hidden; background: var(--cream); }
+  .progress-line > span { display: block; height: 100%; background: var(--marmalade); border-radius: 99px; transition: width .5s ease; }
+  details.checkgroup { border-top: 1.5px dashed var(--line-faint); }
+  details.checkgroup:first-of-type { border-top: none; }
+  details.checkgroup summary {
+    list-style: none; cursor: pointer; padding: 12px 2px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-weight: 600; font-size: 14.5px;
+  }
+  details.checkgroup summary::-webkit-details-marker { display: none; }
+  details.checkgroup summary .count { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--ink-faint); font-size: 13.5px; }
+  .checkitem { display: flex; align-items: flex-start; gap: 11px; padding: 8px 2px 8px 4px; cursor: pointer; }
+  .checkitem input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .box {
+    flex: none; width: 22px; height: 22px; margin-top: 1px;
+    border: 1.5px solid var(--ink); border-radius: 6px; position: relative; background: var(--cream);
+  }
+  .box svg { position: absolute; inset: -4px; width: 30px; height: 30px; }
+  .box svg path {
+    stroke: var(--marmalade); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 34; stroke-dashoffset: 34;
+  }
+  .checkitem input:checked ~ .box svg path { stroke-dashoffset: 0; transition: stroke-dashoffset .3s ease .05s; }
+  .checkitem input:focus-visible ~ .box { outline: 2.5px solid var(--marmalade); outline-offset: 2px; }
+  .checkitem .txt { font-size: 14.5px; line-height: 1.45; }
+  .checkitem input:checked ~ .txt { color: var(--ink-faint); }
+  .seg { display: flex; border: 1.5px solid var(--ink); border-radius: 11px; overflow: hidden; margin-top: 12px; }
+  .seg button { flex: 1; font: 600 13.5px var(--sans); padding: 10px 6px; background: transparent; border: none; cursor: pointer; color: var(--ink-soft); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+  .actions3 { counter-reset: act; margin-top: 10px; }
+  .actions3 p { position: relative; padding: 9px 0 9px 34px; border-bottom: 1.5px dashed var(--line-faint); font-size: 14.5px; counter-increment: act; }
+  .actions3 p:last-child { border-bottom: none; }
+  .actions3 p::before {
+    content: counter(act); position: absolute; left: 0; top: 8px;
+    width: 23px; height: 23px; border: 1.5px solid var(--marmalade); border-radius: 50%;
+    font: italic 400 14px var(--serif); color: var(--toffee);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .house-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1.5px dashed var(--line-faint); font-size: 14.5px; }
+  .house-row:last-child { border-bottom: none; }
+  .watermath { margin-top: 12px; padding: 12px 14px; border: 1.5px dashed var(--marmalade); border-radius: 12px; font-size: 14px; background: var(--amber-soft); }
+  .watermath b { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 16px; }
+
+  /* ——— steady (lights-out pages) ——— */
+  .offline-note { display: flex; gap: 9px; align-items: flex-start; margin-top: 12px; font-size: 13.5px; color: var(--ink-soft); }
+  .offline-note svg { flex: none; margin-top: 2px; }
+  .sheetgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .qsheet {
+    background: var(--slate); color: var(--cream); border: 1.5px solid var(--ink);
+    border-radius: 14px; padding: 16px 14px; min-height: 118px; cursor: pointer;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    text-align: left; font: inherit; transition: transform .08s ease;
+  }
+  .qsheet:active { transform: scale(.98); }
+  .qsheet .qs-title { font-family: var(--serif); font-size: 18.5px; line-height: 1.2; }
+  .qsheet .qs-sub { font-size: 12px; color: rgba(243,234,219,.66); }
+  .qsheet svg { align-self: flex-start; }
+  .numbers { display: grid; gap: 0; margin-top: 8px; }
+  .numbers a {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding: 11px 2px; border-bottom: 1.5px dashed var(--line-faint);
+    text-decoration: none; color: var(--ink);
+  }
+  .numbers a:last-child { border-bottom: none; }
+  .numbers .num { font-family: var(--serif); font-size: 22px; }
+  .numbers .what { font-size: 13px; color: var(--ink-soft); text-align: right; }
+  .steady-list { margin-top: 4px; }
+  .steady-list li { font-size: 14.5px; padding: 7px 0 7px 2px; list-style: none; border-bottom: 1.5px dashed var(--line-faint); }
+  .steady-list li:last-child { border-bottom: none; }
+  .steady-list b { font-weight: 600; }
+  .agecard { padding: 10px 0; border-bottom: 1.5px dashed var(--line-faint); font-size: 14.5px; }
+  .agecard:last-child { border-bottom: none; }
+  .agecard .age { font-weight: 700; font-size: 13px; }
+  .agecard p { color: var(--ink-soft); margin-top: 3px; }
+  .golden { margin-top: 12px; padding: 13px 15px; border-left: 3px solid var(--marmalade); background: var(--cream-card); font-family: var(--serif); font-style: italic; font-size: 15px; border-radius: 0 10px 10px 0; }
+
+  /* ——— full-screen dark guide ——— */
+  .guide {
+    position: absolute; inset: 0; z-index: 40; background: var(--slate-deep); color: var(--cream);
+    display: none; flex-direction: column;
+  }
+  .guide.open { display: flex; animation: rise .25s ease both; }
+  .guide-head { padding: 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(243,234,219,.18); }
+  .guide-back {
+    background: transparent; color: var(--cream); border: 1.5px solid rgba(243,234,219,.5);
+    border-radius: 10px; padding: 9px 15px; font: 600 14px var(--sans); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .guide-head h2 { font-size: 20px; }
+  .guide-body { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
+  .guide-body .stagelabel { font-size: 11.5px; text-transform: uppercase; letter-spacing: .15em; color: #e0a94f; margin: 22px 0 6px; font-weight: 700; }
+  .guide-body .stagelabel:first-child { margin-top: 0; }
+  .guide-body p.step { font-size: 17.5px; line-height: 1.55; padding: 10px 0; border-bottom: 1px dashed rgba(243,234,219,.2); }
+  .guide-body p.step:last-child { border-bottom: none; }
+  .guide-body p.step b { color: #e0a94f; font-weight: 600; }
+  .guide-calm { margin-top: 26px; font-family: var(--serif); font-style: italic; font-size: 15.5px; color: rgba(243,234,219,.72); }
+
+  /* ——— overlays & sheets ——— */
+  .scrim {
+    position: absolute; inset: 0; z-index: 50; background: rgba(32,32,32,.45);
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .scrim.open { display: flex; }
+  .sheet {
+    width: 100%; max-height: 86%; overflow-y: auto;
+    background: var(--cream); border-top: 2px solid var(--ink);
+    border-radius: 22px 22px 0 0; padding: 10px 20px 28px;
+    animation: slideup .28s cubic-bezier(.3,.9,.4,1) both;
+  }
+  @keyframes slideup { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .grab { width: 40px; height: 4px; border-radius: 99px; background: var(--line-faint); margin: 6px auto 14px; }
+  .sheet h2 { margin-bottom: 2px; }
+  .sheet .sub { margin-bottom: 14px; }
+  .field { margin-top: 13px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-soft); margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; font: 15px var(--sans); color: var(--ink);
+    background: var(--cream-card); border: 1.5px solid var(--ink); border-radius: 10px; padding: 11px 12px;
+  }
+  .field .hint { font-size: 12.5px; color: var(--ink-faint); margin-top: 5px; font-style: italic; font-family: var(--serif); }
+  .btnrow { display: flex; gap: 10px; margin-top: 18px; }
+  .stepper { display: flex; align-items: center; gap: 12px; }
+  .stepper button {
+    width: 34px; height: 34px; border: 1.5px solid var(--ink); background: var(--cream-card);
+    border-radius: 50%; font: 400 19px var(--serif); cursor: pointer; color: var(--ink); line-height: 1;
+  }
+  .stepper .val { font-family: var(--serif); font-size: 18px; min-width: 22px; text-align: center; }
+
+  /* ——— scan simulation ——— */
+  .scanner {
+    position: absolute; inset: 0; z-index: 60; background: #171614; display: none; flex-direction: column;
+    color: var(--cream);
+  }
+  .scanner.open { display: flex; }
+  .scan-stage { flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .scan-stage .fauxlabel {
+    width: 74%; max-width: 300px; padding: 20px 18px; border-radius: 8px;
+    background: #24221f; border: 1px solid rgba(243,234,219,.15);
+    font-family: var(--serif); text-align: center; color: rgba(243,234,219,.5);
+    transform: rotate(-2deg);
+  }
+  .fauxlabel .fl-name { font-size: 19px; color: rgba(243,234,219,.75); }
+  .fauxlabel .fl-bb { margin-top: 10px; font-family: var(--sans); font-size: 13px; letter-spacing: .12em; }
+  .viewfinder { position: absolute; inset: 8% 7%; pointer-events: none; }
+  .viewfinder i { position: absolute; width: 30px; height: 30px; border: 3px solid var(--cream); }
+  .viewfinder i:nth-child(1) { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+  .viewfinder i:nth-child(2) { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+  .viewfinder i:nth-child(3) { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+  .viewfinder i:nth-child(4) { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
+  .scanline {
+    position: absolute; left: 10%; right: 10%; height: 2px; background: var(--marmalade);
+    box-shadow: 0 0 14px 2px rgba(193,120,23,.65); top: 15%;
+    animation: sweep 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes sweep { from { top: 15%; } to { top: 82%; } }
+  .scan-status { text-align: center; font-size: 13.5px; color: rgba(243,234,219,.7); padding: 12px; }
+  .scan-found {
+    position: absolute; left: 14px; right: 14px; bottom: 14px;
+    background: var(--cream); color: var(--ink); border: 2px solid var(--ink); border-radius: 16px; padding: 16px;
+    animation: slideup .3s ease both;
+  }
+  .scan-found .sf-eyebrow { font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: var(--dill); font-weight: 700; }
+  .scan-found .sf-name { font-family: var(--serif); font-size: 21px; margin-top: 3px; }
+  .scan-found .sf-bb { font-size: 14px; color: var(--ink-soft); margin-top: 2px; }
+  .scan-close { position: absolute; top: 14px; right: 14px; z-index: 5; background: rgba(243,234,219,.12); border: 1.5px solid rgba(243,234,219,.5); color: var(--cream); border-radius: 99px; width: 40px; height: 40px; font-size: 17px; cursor: pointer; }
+
+  /* ——— tabs ——— */
+  nav.tabs {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 30;
+    display: flex; background: var(--cream);
+    border-top: 2px solid var(--ink);
+    padding: 6px 4px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  nav.tabs button {
+    flex: 1; background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font: 600 10.5px var(--sans); letter-spacing: .05em; color: var(--ink-faint);
+    padding: 6px 2px 2px;
+  }
+  nav.tabs button svg { stroke: currentColor; }
+  nav.tabs button[aria-selected="true"] { color: var(--ink); }
+  nav.tabs button .tab-tick { display: block; width: 30px; height: 5px; opacity: 0; }
+  nav.tabs button[aria-selected="true"] .tab-tick {
+    opacity: 1;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 5"><path d="M1 3 C 5 .8, 9 4.4, 14 2.4 S 25 1.4, 29 3.2" fill="none" stroke="%23c17817" stroke-width="2" stroke-linecap="round"/></svg>') no-repeat center;
+  }
+
+  /* ——— toast ——— */
+  .toast {
+    position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(8px);
+    background: var(--ink); color: var(--cream); font-size: 13.5px; font-weight: 600;
+    padding: 11px 18px; border-radius: 99px; opacity: 0; pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease; z-index: 70; max-width: 86%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .foot-note { margin-top: 26px; text-align: center; font-size: 12px; color: var(--ink-faint); }
+  .foot-note .hand { font-size: 14px; color: var(--ink-soft); display: block; margin-bottom: 3px; }
+  .foot-note button { margin-top: 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<div class="shell">
+<div class="app" id="app">
+
+  <!-- ============ HEADER ============ -->
+  <div class="app-head">
+    <div class="logo" aria-label="Ready and Steady">
+      <svg viewBox="0 0 272.88 126.83" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true"><g fill="#202020">
+        <path d="M40.19,84.05c2.05,3.47,4.88,7.1,9.12,8,1.56.05,4.67-6.97,7.72-8.2s6.23-.39,9.3-.59c-2.49,2.58-6.02,2.5-9.11,4.75-1.27.92-6.41,5.68-5.6,7.14,8.14,6,15.44,13.91,25.59,16.43l8.12.97c-14.48,4.66-29.42-1.04-40.8-10.14-6.76,8.76-31.31,10.49-33.49-2.33-1.43-8.38,9.71-12.53,16.47-13.67-6.32-7.61-7.88-16.59,3.31-20.05,21.07-6.52,35.9,9.58,9.36,17.69ZM36,67.58c-8.57,2-.5,16.59,3.6,15.56.88-.22,4.99-3.01,5.71-3.88,5.66-6.87-1.27-13.56-9.31-11.68ZM27.29,87.32c-1.63.46-5.92,5.58-6.11,7.49-1.04,10.41,16.91,13.27,22.16,5.47-3.82-2.57-9.63-10.31-13.01-12.32-1.13-.68-1.63-1.04-3.04-.64Z"/>
+        <path d="M51.57,52.51c.7-1.75,3.03.04,4.8-1.93,1.15-1.29,1.41-3.86,1.57-5.56.46-5.06.81-22.54-.05-26.95-.63-3.22-4.14-2.6-5.53-5.16,5.41-.09,10.85.08,16.27.02,6.58-.06,13.2-1.35,19.79,1.54,4.99,2.19,6.6,5.24,5.94,10.73-.74,6.2-5.73,6.72-10.1,8.92-.75.38-1.27-.21-.99,1.35,10.88,13.43,21.94,26.82,41.18,18.63-.2,1.23-1.48,1.49-2.39,1.96-12.45,6.36-28.78,4.38-38.83-5.5-2.63-2.59-10.2-16.21-13.82-15.48-1.67.34-2.63,12.91,1.2,15.42,1.45.95,3.58.7,3.93,2.01h-22.97ZM68.21,33.5c5.11,0,11.5,1.06,14.42-4.2,5.39-9.71-5.42-18.47-14.42-13.63v17.82Z"/>
+        <path d="M189.4,10.53v34.46c0,2.25,5.6,1.01,4.75,3.56-4.8-1.06-12.22,3.69-14.67-1.61-8.97,5.66-23.09,1.99-23.41-9.86-.35-13.11,13.37-16.14,23.81-13.09l-.38-7.93c-1.5-2.54-6.47-.12-5.95-3.15l15.85-2.38ZM179.7,45.19c2.32-2.69,2.14-18.18-3.73-20.05-11.72-3.72-12.61,18.02-4.05,20.68,1.76.55,6.59.74,7.77-.63Z"/>
+        <path d="M225.62,64.1v34.46l4.75,3.56-13.04.85-.84-2.44c-31.94,12.74-33.17-31.5-.39-22.96l-.38-7.93c-1.5-2.54-6.47-.12-5.95-3.15l15.85-2.38ZM215.92,98.76c1.56-5.37,3.01-18.78-4.35-20.27-14.38-2.91-11.48,27.99,4.35,20.27Z"/>
+        <path d="M106.01,68.07l-.8,10.29c-2.42.58-1.73-2.38-2.83-3.89-3.33-4.6-9.6-7.23-15.18-5.01-3.52,1.4-4.76,6.13-2,8.94,5.52,5.61,22.91,5.07,23.25,16.2.41,13.36-24.75,13.64-33.2,8.98l-.13-9.37c2.28,1.82,2.63,4.36,5.14,6.33,4.59,3.62,17.3,5.73,17.81-2.03.57-8.66-22.37-7.97-23.79-18.92-2.08-16.12,21.69-13.92,31.72-11.52Z"/>
+        <path d="M209.2,23.2l-3.09,4.22,7.85,13.99c.86.65,12.61-18.6,2.37-16.64-.06-.51,1.05-1.58,1.19-1.58h11.49l-5.7,6.58c-7.76,12.32-12.51,38.45-32.18,33.28-8.03-2.11-5.08-11.04,1.27-9.26,3.53.99,5.04,5.93,8.99,5.44,2.99-.37,7.58-5.29,7.03-8.65-4.35-7.35-7.97-16.55-13.43-23.07-1.47-1.76-3.91-1.48-3.21-4.32h17.43Z"/>
+        <path d="M245.03,76.77c.28.07,1.39,1.31,1.19,1.57l-3.14.84,7.5,15.79c1.21-.03,6.4-11.42,6.61-13.26.28-2.53-1.64-3.36-3.83-3.37-.25-.24,1.02-1.58,1.19-1.58h11.49c.41,1.9-.31,1.28-1.03,1.77-13.87,9.35-14.41,44.14-37.01,38.26-5.4-1.41-8.09-8.16-1.59-9.61,5.25-1.17,5.89,3.25,9.27,5.14,4.4,2.46,8.15-3.97,9.77-7.43-4.8-6.77-7.67-16.53-12.8-22.83-1.52-1.86-2.76-3.47-5.4-3.71-.32-.84,2.61-1.57,2.77-1.57,3.57,0,12.32-.69,15.05,0Z"/>
+        <path d="M157.71,45.38c.39,1.83-.2,1.27-1.01,1.78-1.36.85-4.95,2.21-6.52,2.2-3.34-.02-4.58-3.14-6.3-3.18-1.31-.03-4.58,2.08-7.15,2.36-5.46.6-13.64.11-11.34-7.37,1.55-5.04,15.4-4.43,18.08-6.47s-.48-10.81-6.58-8.97c-3.9,1.18-2.23,3.83-2.2,5.85.04,2.64-8.79,3.57-8.74-.87.09-7.59,26.05-12.93,27.73.86.56,4.62-3.78,16.34,4.03,13.8ZM144.24,35.88c-2.75,1.3-8.97,1.49-9.52,5.19-.46,3.08,1.57,4.17,4.39,4.36,6.83.46,4.98-4.58,5.13-9.55Z"/>
+        <path d="M193.14,98.95c-.09,3.66-8.17,3.71-10.53,3-1.43-.43-2.49-2.77-3.32-2.83-.67-.05-2.73,1.84-3.93,2.24-5.32,1.76-17.13,1.77-14.54-6.62,1.3-4.21,14.26-5.29,18.08-6.47,4.01-10.32-11.99-13.81-9.51-1.2l-7.82-.9c-1.51-10.99,22.51-12.05,26.22-5.24,3.39,6.23-3.66,20.34,5.35,18.01ZM179.67,89.45c-4.55.88-11.84,2.25-8.78,8.39,7.83,3.68,9.88-1.16,8.78-8.39Z"/>
+        <path d="M159.08,88.66h-19.8c1.41,11.55,12.11,10.6,20.6,7.14-8.21,11.75-32.21,8.9-30.11-8.35,1.71-14.1,31.98-16.4,29.32,1.21ZM139.28,87.07c3.9-.8,11.42,2.28,11.95-2.76,1.05-10.08-13.85-7.46-11.95,2.76Z"/>
+        <path d="M104.64,35.08c-.08,7.19,5.59,10.09,12.27,9.51,2.92-.25,4.2-1.68,6.74-2.38-.47,5.31-9.44,7.2-13.86,7.19-7.65-.02-15.47-4.99-15.51-13.14-.06-11.18,13.2-14.77,22.46-12.89,4.46.91,10.48,7.41,6.52,11.7h-18.61ZM108.37,24.95c-2.19.65-5.23,5.34-4.19,7.8.81,1.1,10.55,1.14,11.6.41,3-2.11-.29-10.31-7.41-8.2Z"/>
+        <path d="M121.85,96.97c.93,3.38,6.13,2.81,8.71,1.99-2.49,4.91-14.55,5.49-17.35,1.1-2.21-3.47-.01-20.05-.87-20.92l-4.76-1.18c5.88-.96,9.32-5.08,13.86-8.33l.4,7.14h8.71c1.28.98-.01,1.43-1.17,1.58-2.35.3-5.13-.21-7.54,0,.88,4.93-1.18,14.32,0,18.61Z"/>
+      </g></svg>
+    </div>
+    <div class="datestamp" id="datestamp"></div>
+  </div>
+
+  <main id="main">
+
+    <!-- ============ TODAY ============ -->
+    <section class="panel active" id="panel-today" role="tabpanel" aria-label="Today">
+      <h1 id="greeting">Good evening.</h1>
+      <p class="sub">Here's how your shelf is doing.</p>
+
+      <div class="card">
+        <div class="card-label">
+          <span class="eyebrow">Your shelf</span>
+          <button class="linklike" data-goto="pantry">Open the pantry</button>
+        </div>
+        <div class="shelf-days" id="shelf-days"></div>
+        <p class="shelf-note" id="shelf-note"></p>
+        <div class="jarshelf" id="jarshelf" aria-hidden="true"></div>
+        <div class="shelf-marks">
+          <span>&nbsp;</span><span>&nbsp;</span>
+          <span id="mark72">72 h</span>
+          <span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span>
+          <span>1 week</span>
+        </div>
+        <div class="catrows" id="catrows"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">
+          <span class="eyebrow">Use these soon</span>
+          <button class="linklike" data-goto="pantry">See all</button>
+        </div>
+        <div id="usesoon"></div>
+        <p class="payoff">Eat them now, buy fresh ones — rotation is the whole trick.</p>
+      </div>
+
+      <div class="card quiet">
+        <div class="card-label">
+          <span class="eyebrow">Ready Day</span>
+        </div>
+        <p style="font-size:14.5px"><b>Sunday 25 October</b> — when the clocks change. Thirty calm minutes: coffee on, dates checked, batteries counted. We'll remind you.</p>
+        <button class="btn ghost slim" style="margin-top:12px" id="btn-ritual">See the ritual</button>
+      </div>
+
+      <div class="card">
+        <div class="card-label"><span class="eyebrow">Your turn</span></div>
+        <h2>Tell Betty what you think</h2>
+        <p style="font-size:14.5px;margin-top:6px">This is a concept test — your honest reaction decides what gets built. The confusing bits are the most useful ones.</p>
+        <div class="btnrow">
+          <a class="btn ghost slim" style="flex:1" href="sms:+46708264276?body=My%20Ready%20%26%20Steady%20thoughts%3A%20">Text a thought</a>
+          <a class="btn warm slim" style="flex:1" href="mailto:betty.toth@gmail.com?subject=My%20Ready%20%26%20Steady%20thoughts&amp;body=Hi%20Betty!%0A%0A1.%20First%20thing%20I%20opened%3A%20%0A2.%20Where%20I%20hesitated%20or%20got%20confused%3A%20%0A3.%20Would%20I%20pay%20~29%20kr%2Fmonth%20for%20the%20expiry%20reminders%3F%20%0A4.%20One%20thing%20I%27d%20add%3A%20%0A%0A">Email your thoughts</a>
+        </div>
+      </div>
+
+      <div class="foot-note">
+        <span class="hand">Ready, not scared.</span>
+        Concept prototype — nothing here is final.
+        <br><button class="linklike" id="btn-reset">Reset the demo</button>
+      </div>
+    </section>
+
+    <!-- ============ PANTRY ============ -->
+    <section class="panel" id="panel-pantry" role="tabpanel" aria-label="Pantry">
+      <h1>The Pantry</h1>
+      <p class="sub">Your emergency shelf, kept alive.</p>
+
+      <div class="statstrip" id="pantry-stats"></div>
+
+      <div class="chips" role="group" aria-label="Filter items">
+        <button class="chip" data-filter="all" aria-pressed="true">Everything</button>
+        <button class="chip" data-filter="water" aria-pressed="false">Water</button>
+        <button class="chip" data-filter="food" aria-pressed="false">Food</button>
+        <button class="chip" data-filter="gear" aria-pressed="false">Gear</button>
+      </div>
+
+      <div id="pantry-list"></div>
+
+      <div class="addbar">
+        <button class="btn warm" id="btn-add">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add to the shelf
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ CHECKLISTS ============ -->
+    <section class="panel" id="panel-check" role="tabpanel" aria-label="Checklists">
+      <h1>Checklists</h1>
+      <p class="sub">Small steps. There is no behind.</p>
+
+      <div class="card">
+        <div class="card-label"><span class="eyebrow">Are you ready? — the 15-minute check</span></div>
+        <div class="score" id="check-score"></div>
+        <p class="tier" id="check-tier"></p>
+        <div class="progress-line"><span id="check-bar"></span></div>
+        <div id="check-groups" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card quiet">
+        <div class="card-label"><span class="eyebrow">Do these three today — 20 minutes, 0 kr</span></div>
+        <div class="actions3">
+          <p><b>Fill two bottles with water</b> and put them where you'd find them in the dark.</p>
+          <p><b>Text your out-of-area person:</b> "If anything ever disrupts things here, you're our check-in contact — okay?"</p>
+          <p><b>Put a torch by every bed.</b> Tonight.</p>
+        </div>
+        <p class="payoff">Feel that? That's the difference between worrying and preparing.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-label"><span class="eyebrow">Our home, ready</span></div>
+        <p style="font-size:14px;color:var(--ink-soft)">Two friendly levels. Most families reach the first with one shopping trip.</p>
+        <div class="seg" role="group" aria-label="Checklist level">
+          <button data-level="weekend" aria-pressed="true">Weekend-Ready · 72 h</button>
+          <button data-level="week" aria-pressed="false">Week-Ready · 7 days</button>
+        </div>
+        <div id="master-list" style="margin-top:6px"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">
+          <span class="eyebrow">Your household</span>
+          <button class="linklike" id="btn-house">Edit</button>
+        </div>
+        <div id="house-rows"></div>
+        <div class="watermath" id="watermath"></div>
+      </div>
+    </section>
+
+    <!-- ============ STEADY ============ -->
+    <section class="panel" id="panel-steady" role="tabpanel" aria-label="Steady">
+      <h1>Steady</h1>
+      <p class="sub">If something happens: open here, breathe out.</p>
+
+      <p class="offline-note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dill)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Everything on this page lives on your phone. No internet needed — that's the point.
+      </p>
+
+      <div class="sheetgrid" id="sheetgrid"></div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-label"><span class="eyebrow">Numbers that matter · Sweden</span></div>
+        <div class="numbers">
+          <a href="tel:112"><span class="num">112</span><span class="what">Emergency — life or property in danger</span></a>
+          <a href="tel:113 13"><span class="num">113 13</span><span class="what">Information during accidents &amp; crises</span></a>
+          <a href="tel:1177"><span class="num">1177</span><span class="what">Health advice, around the clock</span></a>
+        </div>
+      </div>
+
+      <div class="card quiet">
+        <div class="card-label"><span class="eyebrow">Keep everyone steady</span></div>
+
+        <details class="checkgroup">
+          <summary>Ten games for when the power is out <span class="count">the fun part</span></summary>
+          <ul class="steady-list">
+            <li><b>Shadow theatre</b> — one torch, one wall, everyone's hands.</li>
+            <li><b>The listening game</b> — sit in the dark 60 seconds; who heard the most?</li>
+            <li><b>Candlelight story circle</b> — one sentence each, build a story.</li>
+            <li><b>Torch hide-and-seek</b> — seeker gets the torch.</li>
+            <li><b>The tasting game</b> — blindfold + five pantry items to identify.</li>
+            <li><b>Card tournament</b> — keep a deck <i>with</i> the emergency supplies.</li>
+            <li><b>Blanket fort night</b> — the warm room becomes the fort. Also heat strategy. Don't tell the kids.</li>
+            <li><b>Radio DJ</b> — kids "present" the news from the wind-up radio.</li>
+            <li><b>Memory lane</b> — adults tell stories from before phones. Kids find these unbelievable.</li>
+            <li><b>The gratitude round</b> — before sleep: one good thing from today, even today.</li>
+          </ul>
+        </details>
+
+        <details class="checkgroup">
+          <summary>Talking with kids — without the scary parts <span class="count">by age</span></summary>
+          <div class="golden">Children take their cue from your tone, not your words. Calm voice, simple facts, always end at safety.</div>
+          <div class="agecard"><span class="age">Ages 3–6</span><p>Keep it concrete and cosy: "Sometimes the lights go out. Then we light our lanterns. Want to see our special cupboard?" Give them a job — torch keeper counts.</p></div>
+          <div class="agecard"><span class="age">Ages 7–12</span><p>Ask first: "What have you heard?" Correct gently, then anchor: "That's exactly why we have our plan." Show them the app. Kids this age become its biggest fans.</p></div>
+          <div class="agecard"><span class="age">Teens</span><p>Give them the real thing — respect is the reassurance. Put them in charge of something real: the power banks, the pet plan, teaching the little ones a game.</p></div>
+          <div class="agecard"><span class="age">If they ask "will something bad happen to us?"</span><p>"Probably not. But our family likes being ready, because being ready means it would be okay. That's why it's called a <i>just in case</i>."</p></div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ TABS ============ -->
+  <nav class="tabs" role="tablist" aria-label="Main">
+    <button role="tab" data-tab="today" aria-selected="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></svg>
+      Today<span class="tab-tick"></span>
+    </button>
+    <button role="tab" data-tab="pantry" aria-selected="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="3.4" rx="1.2"/><path d="M8 5.9C6.6 7 5.5 8.6 5.5 10.5v8A3 3 0 0 0 8.5 21.5h7a3 3 0 0 0 3-3v-8c0-1.9-1.1-3.5-2.5-4.6"/><path d="M5.8 13.5h12.4"/></svg>
+      Pantry<span class="tab-tick"></span>
+    </button>
+    <button role="tab" data-tab="check" aria-selected="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="m8 12.2 2.4 2.3L16 9"/></svg>
+      Checklists<span class="tab-tick"></span>
+    </button>
+    <button role="tab" data-tab="steady" aria-selected="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1.8 2.4 3 4.1 3 6a3 3 0 1 1-6 0c0-1.9 1.2-3.6 3-6Z"/><path d="M7.5 15h9l-1 6.5h-7z"/></svg>
+      Steady<span class="tab-tick"></span>
+    </button>
+  </nav>
+
+  <!-- ============ FULL-SCREEN GUIDE ============ -->
+  <div class="guide" id="guide" role="dialog" aria-modal="true">
+    <div class="guide-head">
+      <button class="guide-back" id="guide-back">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19 8 12l7-7"/></svg>
+        Back
+      </button>
+      <h2 id="guide-title"></h2>
+    </div>
+    <div class="guide-body" id="guide-body"></div>
+  </div>
+
+  <!-- ============ SHEETS ============ -->
+  <div class="scrim" id="scrim">
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <!-- ============ SCANNER ============ -->
+  <div class="scanner" id="scanner" role="dialog" aria-modal="true" aria-label="Scan a date label">
+    <button class="scan-close" id="scan-close" aria-label="Close scanner">✕</button>
+    <div class="scan-stage">
+      <div class="fauxlabel" id="fauxlabel"></div>
+      <div class="viewfinder"><i></i><i></i><i></i><i></i></div>
+      <div class="scanline" id="scanline"></div>
+      <div class="scan-found" id="scan-found" hidden></div>
+    </div>
+    <p class="scan-status" id="scan-status">Point at the date label or barcode…</p>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, el) { return (el || document).querySelector(s); };
+  var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
+  var DAY = 86400000;
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var VKEY = 'rs-proto-v1';
+
+  function iso(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function days(offset) { return iso(new Date(today.getTime() + offset * DAY)); }
+  function daysUntil(iso) { return Math.round((new Date(iso + 'T00:00:00') - today) / DAY); }
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function fmt(iso) {
+    var d = new Date(iso + 'T00:00:00');
+    var s = d.getDate() + ' ' + MONTHS[d.getMonth()];
+    if (d.getFullYear() !== today.getFullYear()) s += ' ' + d.getFullYear();
+    return s;
+  }
+  function addMonths(from, n) {
+    var d = new Date(from + 'T00:00:00'); d.setMonth(d.getMonth() + n);
+    return iso(d);
+  }
+
+  /* ————— seed data (dates relative to today so the demo never goes stale) ————— */
+  function seed() {
+    return {
+      house: { adults: 2, kids: 2, pets: 1, allergy: 'Nora — gluten' },
+      items: [
+        { id: 1, cat: 'water', name: 'Water container A', qty: '15 L', litres: 15, filled: days(-114), due: days(-114 + 182), kind: 'refresh' },
+        { id: 2, cat: 'water', name: 'Water container B', qty: '15 L', litres: 15, filled: days(-9), due: days(-9 + 182), kind: 'refresh' },
+        { id: 3, cat: 'water', name: 'Bottled water', qty: '6 × 1.5 L', litres: 9, due: days(310), kind: 'bb' },
+        { id: 4, cat: 'food', name: 'Crushed tomatoes', qty: '6 tins', due: days(21), kind: 'bb', pd: 3 },
+        { id: 5, cat: 'food', name: 'White beans', qty: '4 tins', due: days(34), kind: 'bb', pd: 3 },
+        { id: 6, cat: 'food', name: 'Tuna', qty: '5 tins', due: days(540), kind: 'bb', pd: 2.5 },
+        { id: 7, cat: 'food', name: 'Oats', qty: '1 kg', due: days(230), kind: 'bb', pd: 4 },
+        { id: 8, cat: 'food', name: 'Pasta', qty: '2 kg', due: days(700), kind: 'bb', pd: 6 },
+        { id: 9, cat: 'food', name: 'Gluten-free pasta', qty: '2 packs', due: days(280), kind: 'bb', pd: 2, tag: 'Nora-safe' },
+        { id: 10, cat: 'food', name: 'Crispbread', qty: '2 packs', due: days(130), kind: 'bb', pd: 2 },
+        { id: 11, cat: 'food', name: 'UHT milk', qty: '6 × 1 L', due: days(64), kind: 'bb', pd: 1.5 },
+        { id: 12, cat: 'food', name: 'Honey', qty: '1 jar', due: null, kind: 'bb', pd: 0.5 },
+        { id: 13, cat: 'food', name: 'Chocolate', qty: '3 bars', due: days(160), kind: 'bb', pd: 0.5, tag: 'morale' },
+        { id: 14, cat: 'gear', name: 'First-aid kit', qty: '1', due: days(-6), kind: 'check' },
+        { id: 15, cat: 'gear', name: 'Power bank', qty: '2', due: days(24), kind: 'check', note: 'charged monthly' },
+        { id: 16, cat: 'gear', name: 'Torches', qty: '4 + headlamp', due: days(110), kind: 'check' },
+        { id: 17, cat: 'gear', name: 'Wind-up radio', qty: '1', due: days(110), kind: 'check', note: 'P4 noted on the back' }
+      ],
+      nextId: 18,
+      check: [1,2,4,5,7,8,9,10,12,15,16,21,22],
+      master: { weekend: [0,1,2,3,5,6,7,8,9,10,12], week: [0,2] }
+    };
+  }
+
+  var state;
+  try { state = JSON.parse(localStorage.getItem(VKEY)); } catch (e) { state = null; }
+  if (!state || !state.items) state = seed();
+  function save() { try { localStorage.setItem(VKEY, JSON.stringify(state)); } catch (e) {} }
+
+  /* ————— static content ————— */
+  var CHECK_GROUPS = [
+    { name: 'Water', items: ['We have stored drinking water (any amount, on purpose)', 'I know how much we’d need for 3 days (3 L per person per day)', 'We could purify water if we had to (boil or tablets)'] },
+    { name: 'Food', items: ['We could eat for 3 days without shops (food we actually like)', 'Some of it needs no cooking', 'Anyone with allergies has their safe foods stocked', 'We own a manual can opener (go check — we’ll wait)'] },
+    { name: 'Light, warmth & power', items: ['Everyone could find a torch in the dark, from their bed', 'We have spare batteries in the right sizes', 'A charged power bank lives in our home', 'We could keep one room warm without electricity', 'Candles + matches live together, away from kids'] },
+    { name: 'Information', items: ['We have a radio that works without mains power', 'I know which channel carries official information here', 'Key phone numbers exist on paper, not just in phones'] },
+    { name: 'People & plan', items: ['We have an out-of-area contact who knows they’re our contact', 'Everyone knows where we’d meet if phones were down', 'The kids have jobs in the plan (torch keeper counts)', 'Someone besides me knows where the important documents are', 'We’ve talked about all this once, calmly, as a family'] },
+    { name: 'Health & money', items: ['First-aid kit exists and isn’t expired', 'We’re one refill ahead on essential medicines', 'Some cash lives at home in small notes', 'Period products / nappies / pet food covered for a week', 'I know where the nearest municipal water point is'] }
+  ];
+
+  var MASTER = {
+    weekend: [
+      { cat: 'Water', txt: 'Drinking water for 3 days — filled, dated containers' },
+      { cat: 'Water', txt: 'A way to purify: rolling boil or tablets' },
+      { cat: 'Food', txt: '3 days of meals you actually like, no cooking needed' },
+      { cat: 'Food', txt: 'Manual can opener' },
+      { cat: 'Food', txt: 'Treats. Genuinely. (See: morale.)' },
+      { cat: 'Warmth', txt: 'Blankets and wool layers within reach, not in the attic' },
+      { cat: 'Warmth', txt: 'Candles + matches, stored together, away from kids' },
+      { cat: 'Warmth', txt: 'Pick your warm room — the smallest one you’d gather in' },
+      { cat: 'Light & power', txt: 'A torch per person — by the beds' },
+      { cat: 'Light & power', txt: 'Spare batteries in the right sizes' },
+      { cat: 'Light & power', txt: 'Power bank, kept charged' },
+      { cat: 'Information', txt: 'Radio that works without mains power' },
+      { cat: 'Health & cash', txt: 'First-aid kit, checked and in date' },
+      { cat: 'Health & cash', txt: 'One refill ahead on essential medicines' },
+      { cat: 'Health & cash', txt: 'Cash at home in small notes' }
+    ],
+    week: [
+      { cat: 'Water', txt: 'Extend water to 7 days (your number is below)' },
+      { cat: 'Water', txt: 'Know your nearest municipal water point' },
+      { cat: 'Food', txt: 'Extend food to 7 days — allergy-safe foods doubled' },
+      { cat: 'Food', txt: 'Camping stove + fuel (ventilated, per instructions)' },
+      { cat: 'Warmth', txt: 'Sleeping bags or thick duvets, one per person' },
+      { cat: 'Light & power', txt: 'Second power bank — two full phone charges each' },
+      { cat: 'Light & power', txt: 'Candle lanterns with stable holders' },
+      { cat: 'Information', txt: 'Emergency broadcast channel written on paper (P4)' },
+      { cat: 'Health & cash', txt: 'Two-week buffer of essential medicines' },
+      { cat: 'Health & cash', txt: 'No-water toilet solution: sturdy bags + your toilet' },
+      { cat: 'Health & cash', txt: 'Period products / nappies / pet food for the week' }
+    ]
+  };
+
+  var GUIDES = {
+    power: { title: 'Power outage', stages: [
+      { label: 'First 10 minutes', steps: ['<b>Torches on</b> — no candles yet; find stable spots first.', 'Is it just us? Check the fuse box, then the neighbours’ windows.', 'Fridge and freezer: <b>keep closed.</b> A fridge holds ~4 hours, a full freezer ~48.'] },
+      { label: 'First hours', steps: ['One room becomes the <b>warm room</b>. Layers on, blankets in.', 'Lanterns lit safely. Phones to low-power mode, power banks out.', 'Radio on <b>at set times</b> — then off. P4 carries official information.'] },
+      { label: 'Longer than a day', steps: ['Eat fridge food first, freezer second, shelf last.', 'Water reserve comes into play if pumps are down.', '<b>Home Adventure Night mode:</b> fort, games, calm. You’ve practised this.'] }
+    ], calm: 'A power cut is almost always hours, not days. You are set up for days.' },
+    storm: { title: 'Storm warning', stages: [
+      { label: 'Before it arrives', steps: ['Charge everything. Fill the bathtub and some bottles.', 'Bring in or tie down balcony and garden things.', 'Car fuelled or charged; park it away from trees.', '<b>Check on a neighbour</b> who might need a hand.'] },
+      { label: 'While it blows', steps: ['Stay in. Keep away from windows.', 'Radio at set times. Let the phone rest between checks.'] },
+      { label: 'Afterwards', steps: ['<b>Assume fallen lines are live</b> — stay clear and report them.', 'Photograph any damage for insurance <b>before</b> you clean up.'] }
+    ], calm: 'Storms pass. Your job is just to be indoors, informed, and unbothered.' },
+    water: { title: 'Water disruption', stages: [
+      { label: 'First, check', steps: ['Planned works or an alert? Check the utility’s page or 113 13.', 'If a <b>boil-water notice</b>: rolling boil, one minute or more.'] },
+      { label: 'Meanwhile', steps: ['Drinking reserve in play: <b>3 litres per person per day.</b>', 'Flushing: bathtub or rain water does the job.', 'The municipal water point is where your jerry cans go if it runs long.'] },
+      { label: 'When it returns', steps: ['Refill every container the moment supply is back.', 'That’s also your reminder to date them.'] }
+    ], calm: 'You planned three litres per person per day. That’s the whole assignment.' },
+    leave: { title: 'Leave in 10 minutes', stages: [
+      { label: 'Grab, in this order', steps: ['<b>People and pets.</b>', 'Phones, power banks, chargers.', 'Medicines and glasses.', 'Wallets and ID.', 'The Calm Kits — one small bag per child.', 'Water bottles and a snack bag.', 'Weather layers. Keys, home and car.'] },
+      { label: 'On the way out', steps: ['Lock up.', 'Text your out-of-area contact where you’re heading.', 'Radio or official info for the route.'] }
+    ], calm: 'Evacuations are rare and usually short — a hotel or a relative’s sofa, not a wilderness. This list means you’d leave calm.' }
+  };
+
+  var SCAN_QUEUE = [
+    { name: 'Crushed tomatoes', qty: '1 tin', due: days(613), pd: 0.5 },
+    { name: 'Kidney beans', qty: '1 tin', due: days(485), pd: 0.75 },
+    { name: 'UHT milk', qty: '1 L', due: days(88), pd: 0.25 },
+    { name: 'Ravioli', qty: '1 tin', due: days(710), pd: 1 }
+  ];
+  var scanIdx = 0;
+
+  /* ————— shared helpers ————— */
+  function statusOf(item) {
+    if (!item.due) return { cls: 'fresh', label: 'keeps forever' };
+    var d = daysUntil(item.due);
+    var verb = item.kind === 'refresh' ? 'refresh' : item.kind === 'check' ? 'check' : 'use';
+    if (d < 0) return { cls: 'due', label: verb + ' now' };
+    if (d <= 45) return { cls: 'soon', label: verb + ' soon' };
+    return { cls: 'fresh', label: 'fresh' };
+  }
+  function metaOf(item) {
+    if (!item.due) return 'Best before: honestly, never.';
+    var d = daysUntil(item.due), when = fmt(item.due);
+    if (item.kind === 'refresh') return 'Filled ' + fmt(item.filled) + ' → refresh by ' + when;
+    if (item.kind === 'check') return (d < 0 ? 'Check was due ' : 'Check by ') + when + (item.note ? ' · ' + item.note : '');
+    return 'Best before ' + when + (d >= 0 && d <= 45 ? ' — ' + (d <= 1 ? 'now' : 'in ' + (d < 14 ? d + ' days' : Math.round(d / 7) + ' weeks')) : '');
+  }
+  function people() { return state.house.adults + state.house.kids; }
+  function waterLitres() {
+    return state.items.filter(function (i) { return i.cat === 'water' && daysUntil(i.due || days(1)) >= 0; })
+      .reduce(function (s, i) { return s + (i.litres || 0); }, 0);
+  }
+  function waterDays() { return waterLitres() / (people() * 3); }
+  function foodDays() {
+    var pd = state.items.filter(function (i) { return i.cat === 'food' && (!i.due || daysUntil(i.due) >= 0); })
+      .reduce(function (s, i) { return s + (i.pd || 0); }, 0);
+    return pd / people();
+  }
+  function stockedDays() { return Math.min(waterDays(), foodDays()); }
+
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+  }
+
+  /* ————— TODAY ————— */
+  function renderToday() {
+    var h = new Date().getHours();
+    $('#greeting').textContent = h < 10 ? 'Good morning.' : h < 18 ? 'Good afternoon.' : 'Good evening.';
+    var wd = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][today.getDay()];
+    $('#datestamp').innerHTML = '<strong>' + wd + '</strong>' + fmt(iso(today));
+
+    var sd = stockedDays();
+    var disp = sd >= 7 ? '7' : String(Math.floor(sd * 2) / 2).replace('.5', '½');
+    $('#shelf-days').innerHTML = '<span class="shelf-lead">Stocked for</span>' + disp + ' <em>days</em>';
+
+    var wD = waterDays(), fD = foodDays();
+    var limiting = wD <= fD ? 'Water' : 'Food';
+    var note;
+    if (sd >= 7) note = '<b>Week-Ready.</b> Honestly impressive — keep it alive on Ready Days.';
+    else if (sd >= 3) note = '<b>Weekend-Ready ✓</b> — on the way to a week. ' + limiting + ' runs out first' + (limiting === 'Water' ? ': two more filled containers reaches day ' + Math.min(7, Math.floor((waterLitres() + 30) / (people() * 3))) + '.' : '.');
+    else note = 'Not there yet — and that’s fine. One shopping trip usually reaches day 3. ' + limiting + ' first.';
+    $('#shelf-note').innerHTML = note;
+
+    /* the jar shelf */
+    var jw = 46, gap = 10, W = 7 * jw + 6 * gap, H = 64;
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + (H + 8) + '" xmlns="http://www.w3.org/2000/svg">';
+    for (var i = 0; i < 7; i++) {
+      var x = i * (jw + gap);
+      var frac = Math.max(0, Math.min(1, sd - i));
+      var innerH = 40, fillH = Math.round(innerH * frac);
+      svg += '<g transform="translate(' + x + ',0)">';
+      svg += '<rect x="10" y="2" width="26" height="7" rx="2.5" fill="none" stroke="#202020" stroke-width="1.8"/>';
+      if (fillH > 0) svg += '<rect class="jar-fill" x="6.5" y="' + (13 + innerH - fillH) + '" width="33" height="' + fillH + '" rx="3" fill="' + (frac === 1 ? '#c17817' : '#e0b264') + '" opacity="0.9"/>';
+      svg += '<path d="M10 11 h26 q4 3 4 8 v28 q0 6 -6 6 h-22 q-6 0 -6 -6 v-28 q0 -5 4 -8 z" fill="none" stroke="#202020" stroke-width="1.8"/>';
+      svg += '</g>';
+    }
+    svg += '<line x1="0" y1="' + (H + 6) + '" x2="' + W + '" y2="' + (H + 6) + '" stroke="#202020" stroke-width="2.2"/>';
+    svg += '</svg>';
+    $('#jarshelf').innerHTML = svg;
+    $('#mark72').className = sd >= 3 ? 'hit' : '';
+    $('#mark72').textContent = sd >= 3 ? '72 h ✓' : '72 h';
+
+    /* category rows */
+    var wcls = wD >= 7 ? 'ok' : wD >= 3 ? 'mid' : 'due';
+    var fcls = fD >= 7 ? 'ok' : fD >= 3 ? 'mid' : 'due';
+    var gearDue = state.items.filter(function (i) { return i.cat === 'gear' && i.due && daysUntil(i.due) < 0; }).length;
+    function fmtD(n) { return n >= 7 ? '7+ days' : (Math.floor(n * 2) / 2 + ' days').replace('.5', '½'); }
+    var rows = [
+      { n: 'Water', v: fmtD(wD), c: wcls, x: waterLitres() + ' L on the shelf' },
+      { n: 'Food', v: fmtD(fD), c: fcls, x: 'allergy-aware ✓' },
+      { n: 'Warmth', v: 'Ready', c: 'ok', x: 'warm room picked' },
+      { n: 'Light & power', v: 'Nearly', c: 'mid', x: 'second power bank on the list' },
+      { n: 'Health', v: gearDue ? gearDue + ' check due' : 'Ready', c: gearDue ? 'due' : 'ok', x: gearDue ? 'first-aid kit' : '' }
+    ];
+    $('#catrows').innerHTML = rows.map(function (r) {
+      return '<div class="catrow"><span class="dot ' + r.c + '"></span><span class="cat-name">' + r.n + '</span><span class="cat-val">' + r.v + '</span><span class="cat-extra">' + r.x + '</span></div>';
+    }).join('');
+
+    /* use soon */
+    var soon = state.items.filter(function (i) { return i.due && daysUntil(i.due) <= 45; })
+      .sort(function (a, b) { return daysUntil(a.due) - daysUntil(b.due); }).slice(0, 4);
+    $('#usesoon').innerHTML = soon.length ? soon.map(function (i) {
+      var st = statusOf(i);
+      return '<div class="usesoon-item"><div><div class="name">' + i.name + ' <span class="qty">' + i.qty + '</span></div><div class="when">' + metaOf(i) + '</div></div><span class="pill ' + st.cls + '">' + st.label + '</span></div>';
+    }).join('') : '<p style="font-size:14px;color:var(--ink-soft)">Nothing needs you right now. Enjoy that.</p>';
+  }
+
+  /* ————— PANTRY ————— */
+  var filter = 'all';
+  function renderPantry() {
+    var items = state.items;
+    var next = items.filter(function (i) { return i.due; }).sort(function (a, b) { return daysUntil(a.due) - daysUntil(b.due); })[0];
+    $('#pantry-stats').innerHTML =
+      '<div class="stat"><span class="n">' + items.length + '</span><span class="l">items</span></div>' +
+      '<div class="stat"><span class="n">' + waterLitres() + ' L</span><span class="l">water</span></div>' +
+      '<div class="stat"><span class="n">' + (next ? fmt(next.due) : '—') + '</span><span class="l">next date</span></div>';
+
+    var cats = filter === 'all' ? ['water', 'food', 'gear'] : [filter];
+    var names = { water: 'Water', food: 'Food', gear: 'Gear & batteries' };
+    $('#pantry-list').innerHTML = cats.map(function (c) {
+      var list = items.filter(function (i) { return i.cat === c; })
+        .sort(function (a, b) { return (a.due ? daysUntil(a.due) : 9999) - (b.due ? daysUntil(b.due) : 9999); });
+      if (!list.length) return '';
+      return '<div class="group-head"><span class="eyebrow">' + names[c] + '</span></div><ul class="grocery">' +
+        list.map(function (i) {
+          var st = statusOf(i);
+          return '<li><button class="item-row" data-item="' + i.id + '"><div class="item-main"><div class="item-name">' + i.name +
+            ' <span class="qty">' + i.qty + '</span>' + (i.tag ? ' <span class="pill tag">' + i.tag + '</span>' : '') +
+            '</div><div class="item-meta">' + metaOf(i) + '</div></div><span class="pill ' + st.cls + '">' + st.label + '</span></button></li>';
+        }).join('') + '</ul>';
+    }).join('');
+  }
+
+  /* ————— CHECK (25-point) ————— */
+  function renderCheck() {
+    var n = state.check.length;
+    $('#check-score').innerHTML = n + ' <em>of 25</em>';
+    $('#check-bar').style.width = (n / 25 * 100) + '%';
+    var tier = n >= 20 ? '<b>Ready &amp; Steady.</b> Honestly impressive — keep it alive with Ready Days.'
+      : n >= 10 ? '<b>Nearly there.</b> You have the bones — one shopping trip and one family conversation moves you to green.'
+      : '<b>The perfect place to begin.</b> Everyone starts here, and the first steps are the fastest.';
+    $('#check-tier').innerHTML = tier;
+
+    var idx = 0;
+    $('#check-groups').innerHTML = CHECK_GROUPS.map(function (g, gi) {
+      var start = idx;
+      var inner = g.items.map(function (txt) {
+        var i = idx++;
+        var on = state.check.indexOf(i) > -1;
+        return '<label class="checkitem"><input type="checkbox" data-check="' + i + '"' + (on ? ' checked' : '') + '><span class="box"><svg viewBox="0 0 30 30"><path d="M7 15.5 13 21 24 8"/></svg></span><span class="txt">' + txt + '</span></label>';
+      }).join('');
+      var got = g.items.filter(function (_, k) { return state.check.indexOf(start + k) > -1; }).length;
+      return '<details class="checkgroup"' + (gi === 0 ? ' open' : '') + '><summary>' + g.name + ' <span class="count">' + got + ' / ' + g.items.length + '</span></summary>' + inner + '</details>';
+    }).join('');
+  }
+
+  /* ————— MASTER LIST ————— */
+  var level = 'weekend';
+  function renderMaster() {
+    var list = MASTER[level], done = state.master[level];
+    var byCat = {};
+    list.forEach(function (it, i) { (byCat[it.cat] = byCat[it.cat] || []).push({ i: i, txt: it.txt }); });
+    $('#master-list').innerHTML = Object.keys(byCat).map(function (c) {
+      return '<div class="group-head"><span class="eyebrow">' + c + '</span></div>' + byCat[c].map(function (it) {
+        var on = done.indexOf(it.i) > -1;
+        return '<label class="checkitem"><input type="checkbox" data-master="' + it.i + '"' + (on ? ' checked' : '') + '><span class="box"><svg viewBox="0 0 30 30"><path d="M7 15.5 13 21 24 8"/></svg></span><span class="txt">' + it.txt + '</span></label>';
+      }).join('');
+    }).join('');
+  }
+
+  /* ————— HOUSEHOLD ————— */
+  function renderHouse() {
+    var h = state.house;
+    $('#house-rows').innerHTML =
+      '<div class="house-row"><span>People</span><b>' + h.adults + ' adult' + (h.adults !== 1 ? 's' : '') + ' · ' + h.kids + ' kid' + (h.kids !== 1 ? 's' : '') + '</b></div>' +
+      '<div class="house-row"><span>Pets</span><b>' + (h.pets ? h.pets + ' (food on the shelf too)' : 'none') + '</b></div>' +
+      '<div class="house-row"><span>Allergies</span><b>' + (h.allergy || 'none noted') + '</b></div>';
+    var need3 = people() * 3 * 3, need7 = people() * 3 * 7;
+    $('#watermath').innerHTML = '<b>' + people() + ' people × 3 L × 7 days = ' + need7 + ' L.</b><br>On the shelf today: ' + waterLitres() + ' L · Weekend level needs ' + need3 + ' L.' + (state.house.allergy ? '<br><i>' + state.house.allergy + ': safe foods are the emergency stock — stock double.</i>' : '');
+  }
+
+  /* ————— STEADY ————— */
+  function renderSteady() {
+    var icons = {
+      power: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e0a94f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5z"/></svg>',
+      storm: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e0a94f" stroke-width="1.8" stroke-linecap="round"><path d="M3.5 8h11a3.5 3.5 0 1 0-2-6.5M3.5 13H18a3.5 3.5 0 1 1-2 6.5"/></svg>',
+      water: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e0a94f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.2 4.2 5.5 7.2 5.5 10.2a5.5 5.5 0 1 1-11 0C6.5 10.2 8.8 7.2 12 3Z"/></svg>',
+      leave: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e0a94f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15M4 21h16M11 4V2.5M13 12h.01"/></svg>'
+    };
+    var subs = { power: 'Torches first, fridge shut', storm: 'Before · during · after', water: '3 L per person per day', leave: 'The calm grab list' };
+    $('#sheetgrid').innerHTML = Object.keys(GUIDES).map(function (k) {
+      return '<button class="qsheet" data-guide="' + k + '">' + icons[k] + '<span><span class="qs-title">' + GUIDES[k].title + '</span><br><span class="qs-sub">' + subs[k] + '</span></span></button>';
+    }).join('');
+  }
+
+  function openGuide(key) {
+    var g = GUIDES[key];
+    $('#guide-title').textContent = g.title;
+    $('#guide-body').innerHTML = g.stages.map(function (s) {
+      return '<p class="stagelabel">' + s.label + '</p>' + s.steps.map(function (st) { return '<p class="step">' + st + '</p>'; }).join('');
+    }).join('') + '<p class="guide-calm">' + g.calm + '</p>';
+    $('#guide').classList.add('open');
+    $('#guide-body').scrollTop = 0;
+  }
+
+  /* ————— SHEETS ————— */
+  function openSheet(html) { $('#sheet').innerHTML = '<div class="grab"></div>' + html; $('#scrim').classList.add('open'); }
+  function closeSheet() { $('#scrim').classList.remove('open'); }
+
+  function sheetAdd() {
+    openSheet(
+      '<h2>Add to the shelf</h2><p class="sub">Two seconds with the camera, or type it in.</p>' +
+      '<button class="btn warm" id="s-scan"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V6a2 2 0 0 1 2-2h2M17 4h2a2 2 0 0 1 2 2v2M21 16v2a2 2 0 0 1-2 2h-2M7 20H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg> Scan the date label</button>' +
+      '<button class="btn ghost" id="s-manual" style="margin-top:10px">Type it in</button>'
+    );
+    $('#s-scan').onclick = function () { closeSheet(); openScanner(); };
+    $('#s-manual').onclick = function () { sheetManual(); };
+  }
+
+  function sheetManual(pre) {
+    pre = pre || {};
+    openSheet(
+      '<h2>' + (pre.name ? 'Check the details' : 'New item') + '</h2><p class="sub">We’ll remind you before the date.</p>' +
+      '<div class="field"><label for="f-name">Item</label><input id="f-name" value="' + (pre.name || '') + '" placeholder="Crushed tomatoes"></div>' +
+      '<div class="field"><label for="f-cat">Category</label><select id="f-cat"><option value="food">Food</option><option value="water"' + (pre.cat === 'water' ? ' selected' : '') + '>Water</option><option value="gear">Gear</option></select></div>' +
+      '<div class="field"><label for="f-qty">Quantity</label><input id="f-qty" value="' + (pre.qty || '') + '" placeholder="6 tins"></div>' +
+      '<div class="field" id="f-date-wrap"><label for="f-date">Best before</label><input id="f-date" type="date" value="' + (pre.due || '') + '"><p class="hint" id="f-hint"></p></div>' +
+      '<div class="btnrow"><button class="btn ghost" id="f-cancel">Cancel</button><button class="btn" id="f-save">Put it on the shelf</button></div>'
+    );
+    var catEl = $('#f-cat'), dateEl = $('#f-date'), hint = $('#f-hint');
+    function syncCat() {
+      var isWater = catEl.value === 'water';
+      $('#f-date-wrap label').textContent = isWater ? 'Filled on' : catEl.value === 'gear' ? 'Check by' : 'Best before';
+      if (isWater && !dateEl.value) dateEl.value = days(0);
+      syncHint();
+    }
+    function syncHint() {
+      if (catEl.value === 'water' && dateEl.value) hint.textContent = 'Stored tap water: we’ll remind you to refresh by ' + fmt(addMonths(dateEl.value, 6)) + ' — six months on.';
+      else if (dateEl.value) hint.textContent = 'Reminder set for ' + fmt(dateEl.value) + ', with a nudge a month before.';
+      else hint.textContent = '';
+    }
+    catEl.onchange = syncCat; dateEl.onchange = syncHint; syncHint();
+    $('#f-cancel').onclick = closeSheet;
+    $('#f-save').onclick = function () {
+      var name = $('#f-name').value.trim(); if (!name) { $('#f-name').focus(); return; }
+      var cat = catEl.value, date = dateEl.value || days(365);
+      var item = { id: state.nextId++, cat: cat, name: name, qty: $('#f-qty').value.trim() || '1' };
+      if (cat === 'water') {
+        item.filled = date; item.due = addMonths(date, 6); item.kind = 'refresh';
+        item.litres = parseFloat(item.qty) || 10;
+      } else if (cat === 'gear') { item.due = date; item.kind = 'check'; }
+      else { item.due = date; item.kind = 'bb'; item.pd = pre.pd || 1; }
+      state.items.push(item); save(); renderAll(); closeSheet();
+      toast(name + ' is on the shelf. We’ve got the date.');
+    };
+  }
+
+  function sheetItem(id) {
+    var item = state.items.filter(function (i) { return i.id === id; })[0];
+    if (!item) return;
+    var st = statusOf(item);
+    openSheet(
+      '<h2>' + item.name + ' <span class="qty">' + item.qty + '</span></h2>' +
+      '<p class="sub">' + metaOf(item) + ' · <span class="pill ' + st.cls + '">' + st.label + '</span></p>' +
+      (item.kind === 'bb' ? '<button class="btn warm" id="i-rotate">Eaten &amp; replaced — fresh date</button>' :
+        item.kind === 'refresh' ? '<button class="btn warm" id="i-rotate">Refreshed today — new 6 months</button>' :
+        '<button class="btn warm" id="i-rotate">Checked today — all good</button>') +
+      '<div class="btnrow"><button class="btn ghost" id="i-remove">Remove</button><button class="btn ghost" id="i-close">Close</button></div>'
+    );
+    $('#i-close').onclick = closeSheet;
+    $('#i-remove').onclick = function () {
+      state.items = state.items.filter(function (i) { return i.id !== id; });
+      save(); renderAll(); closeSheet(); toast('Off the shelf.');
+    };
+    $('#i-rotate').onclick = function () {
+      if (item.kind === 'refresh') { item.filled = days(0); item.due = days(182); toast('Fresh water, dated. See you in six months.'); }
+      else if (item.kind === 'check') { item.due = days(182); toast('Checked. Next look in six months.'); }
+      else { item.due = days(540); toast('Rotation done — fresh ' + item.name.toLowerCase() + ' incoming.'); }
+      save(); renderAll(); closeSheet();
+    };
+  }
+
+  function sheetHouse() {
+    var h = state.house;
+    function stepper(label, key) {
+      return '<div class="house-row"><span>' + label + '</span><span class="stepper"><button data-step="' + key + '" data-d="-1" aria-label="fewer">−</button><span class="val" id="v-' + key + '">' + h[key] + '</span><button data-step="' + key + '" data-d="1" aria-label="more">+</button></span></div>';
+    }
+    openSheet(
+      '<h2>Your household</h2><p class="sub">This drives the maths — water, food, everything.</p>' +
+      stepper('Adults', 'adults') + stepper('Kids', 'kids') + stepper('Pets', 'pets') +
+      '<div class="field"><label for="f-allergy">Allergies &amp; special diets</label><input id="f-allergy" value="' + (h.allergy || '') + '" placeholder="e.g. Nora — gluten"></div>' +
+      '<div class="btnrow"><button class="btn" id="h-done">Done</button></div>'
+    );
+    $$('[data-step]').forEach(function (b) {
+      b.onclick = function () {
+        var k = b.dataset.step, d = +b.dataset.d;
+        h[k] = Math.max(k === 'adults' ? 1 : 0, h[k] + d);
+        $('#v-' + k).textContent = h[k];
+      };
+    });
+    $('#h-done').onclick = function () {
+      h.allergy = $('#f-allergy').value.trim();
+      save(); renderAll(); closeSheet(); toast('Household updated — quantities recalculated.');
+    };
+  }
+
+  function sheetRitual() {
+    openSheet(
+      '<h2>Ready Day</h2><p class="sub">Twice a year, when the clocks change. Thirty minutes.</p>' +
+      '<div class="actions3">' +
+      '<p><b>Put on coffee.</b> This is a calm thing, not an emergency drill.</p>' +
+      '<p><b>Run the logs:</b> dates, batteries, charge levels — the app walks you through.</p>' +
+      '<p><b>Refresh the plan</b> if anything changed. New numbers? New school?</p>' +
+      '<p><b>Ask the family:</b> "Anything we wished we’d had last time something wobbled?"</p>' +
+      '<p><b>Done.</b> Tick it off, feel good until spring.</p>' +
+      '</div>' +
+      '<div class="btnrow"><button class="btn" id="r-close">Lovely</button></div>'
+    );
+    $('#r-close').onclick = closeSheet;
+  }
+
+  /* ————— SCANNER ————— */
+  var scanTimer;
+  function openScanner() {
+    var p = SCAN_QUEUE[scanIdx % SCAN_QUEUE.length];
+    $('#scanner').classList.add('open');
+    $('#scan-found').hidden = true;
+    $('#scanline').style.display = 'block';
+    $('#scan-status').textContent = 'Point at the date label or barcode…';
+    $('#fauxlabel').innerHTML = '<div class="fl-name">' + p.name + '</div><div class="fl-bb">BEST BEFORE · ' + fmt(p.due).toUpperCase() + '</div>';
+    scanTimer = setTimeout(function () {
+      $('#scanline').style.display = 'none';
+      $('#scan-status').textContent = 'Got it.';
+      var f = $('#scan-found');
+      f.innerHTML = '<div class="sf-eyebrow">Found on the label</div><div class="sf-name">' + p.name + '</div><div class="sf-bb">Best before ' + fmt(p.due) + '</div>' +
+        '<div class="btnrow"><button class="btn ghost slim" id="sc-again">Scan again</button><button class="btn warm slim" id="sc-add" style="flex:1">Looks right — add it</button></div>';
+      f.hidden = false;
+      $('#sc-add').onclick = function () {
+        state.items.push({ id: state.nextId++, cat: 'food', name: p.name, qty: p.qty, due: p.due, kind: 'bb', pd: p.pd });
+        save(); scanIdx++; renderAll(); closeScanner();
+        toast(p.name + ' added — we’ll nudge you before ' + fmt(p.due) + '.');
+      };
+      $('#sc-again').onclick = function () { scanIdx++; closeScanner(); openScanner(); };
+    }, 2000);
+  }
+  function closeScanner() { clearTimeout(scanTimer); $('#scanner').classList.remove('open'); }
+
+  /* ————— NAV & EVENTS ————— */
+  function goTab(name) {
+    $$('.panel').forEach(function (p) { p.classList.remove('active'); });
+    $('#panel-' + name).classList.add('active');
+    $$('nav.tabs button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === name)); });
+    $('#main').scrollTop = 0;
+  }
+  $$('nav.tabs button').forEach(function (b) { b.onclick = function () { goTab(b.dataset.tab); }; });
+
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest('[data-goto]'); if (go) { goTab(go.dataset.goto); return; }
+    var it = e.target.closest('[data-item]'); if (it) { sheetItem(+it.dataset.item); return; }
+    var gd = e.target.closest('[data-guide]'); if (gd) { openGuide(gd.dataset.guide); return; }
+    var ch = e.target.closest('.chip'); if (ch) {
+      filter = ch.dataset.filter;
+      $$('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === ch)); });
+      renderPantry(); return;
+    }
+    var sg = e.target.closest('.seg button'); if (sg) {
+      level = sg.dataset.level;
+      $$('.seg button').forEach(function (s) { s.setAttribute('aria-pressed', String(s === sg)); });
+      renderMaster(); return;
+    }
+    if (e.target === $('#scrim')) closeSheet();
+  });
+
+  document.addEventListener('change', function (e) {
+    var c = e.target.closest('[data-check]');
+    if (c) {
+      var i = +c.dataset.check, at = state.check.indexOf(i);
+      if (c.checked && at === -1) state.check.push(i);
+      if (!c.checked && at > -1) state.check.splice(at, 1);
+      save();
+      var open = $$('#check-groups details').map(function (d) { return d.open; });
+      renderCheck();
+      $$('#check-groups details').forEach(function (d, k) { d.open = open[k]; });
+      return;
+    }
+    var m = e.target.closest('[data-master]');
+    if (m) {
+      var mi = +m.dataset.master, arr = state.master[level], mat = arr.indexOf(mi);
+      if (m.checked && mat === -1) arr.push(mi);
+      if (!m.checked && mat > -1) arr.splice(mat, 1);
+      save(); return;
+    }
+  });
+
+  $('#btn-add').onclick = sheetAdd;
+  $('#btn-house').onclick = sheetHouse;
+  $('#btn-ritual').onclick = sheetRitual;
+  $('#guide-back').onclick = function () { $('#guide').classList.remove('open'); };
+  $('#scan-close').onclick = closeScanner;
+  $('#btn-reset').onclick = function () { state = seed(); save(); renderAll(); toast('Demo reset — fresh shelf.'); };
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeSheet(); closeScanner(); $('#guide').classList.remove('open'); }
+  });
+
+  function renderAll() { renderToday(); renderPantry(); renderCheck(); renderMaster(); renderHouse(); renderSteady(); }
+  renderAll();
+})();
+</script>
+</body>
+</html>
