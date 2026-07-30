@@ -25,7 +25,8 @@ Sen vill jag veta (var ärlig, det hjälper mig mest!):
 3. Skulle du betala ca 29 kr/mån för påminnelser innan maten går ut?
 4. Vad saknas?
 
-Svara här, eller tryck på "Tell Betty"-knappen längst ner i appen.
+Svara här, eller maila mig direkt via "Tell Betty"-knappen längst ner i appen
+(frågorna står redan i mailet — du behöver bara skriva svaren).
 (Appen är på engelska än så länge — svensk version kommer.)
 
 Tack! Beredd, inte rädd. ✨
@@ -53,6 +54,7 @@ Then I'd love to know (be honest, that helps me most!):
 3. Would you pay ~29 kr/month for reminders before food expires?
 4. What's missing?
 
-Reply here, or hit the "Tell Betty" button at the bottom of the app.
+Reply here, or email me straight from the "Tell Betty" button at the bottom of
+the app (the questions are already in the email — just type your answers).
 
 Thank you! Ready, not scared. ✨
