@@ -331,43 +331,56 @@
   }
   .stepper .val { font-family: var(--serif); font-size: 18px; min-width: 22px; text-align: center; }
 
-  /* ——— scan simulation ——— */
+  /* ——— camera scanner ——— */
   .scanner {
     position: absolute; inset: 0; z-index: 60; background: #171614; display: none; flex-direction: column;
     color: var(--cream);
   }
   .scanner.open { display: flex; }
-  .scan-stage { flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .scan-stage .fauxlabel {
-    width: 74%; max-width: 300px; padding: 20px 18px; border-radius: 8px;
-    background: #24221f; border: 1px solid rgba(243,234,219,.15);
-    font-family: var(--serif); text-align: center; color: rgba(243,234,219,.5);
-    transform: rotate(-2deg);
+  .scan-stage { flex: 1; position: relative; overflow: hidden; background: #0d0c0b; }
+  .scan-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .scan-guide {
+    position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%);
+    width: 80%; max-width: 340px; min-height: 104px; pointer-events: none;
   }
-  .fauxlabel .fl-name { font-size: 19px; color: rgba(243,234,219,.75); }
-  .fauxlabel .fl-bb { margin-top: 10px; font-family: var(--sans); font-size: 13px; letter-spacing: .12em; }
-  .viewfinder { position: absolute; inset: 8% 7%; pointer-events: none; }
-  .viewfinder i { position: absolute; width: 30px; height: 30px; border: 3px solid var(--cream); }
-  .viewfinder i:nth-child(1) { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
-  .viewfinder i:nth-child(2) { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
-  .viewfinder i:nth-child(3) { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
-  .viewfinder i:nth-child(4) { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
-  .scanline {
-    position: absolute; left: 10%; right: 10%; height: 2px; background: var(--marmalade);
-    box-shadow: 0 0 14px 2px rgba(193,120,23,.65); top: 15%;
-    animation: sweep 1.6s ease-in-out infinite alternate;
+  .scan-guide.barcode { aspect-ratio: 2.4 / 1; }
+  .scan-guide.date { aspect-ratio: 3 / 1; }
+  .scan-guide i { position: absolute; width: 26px; height: 26px; border: 3px solid var(--cream); transition: border-color .2s ease; }
+  .scan-guide i:nth-child(1) { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+  .scan-guide i:nth-child(2) { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+  .scan-guide i:nth-child(3) { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+  .scan-guide i:nth-child(4) { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
+  .scan-guide.hit i { border-color: #9dbb72; }
+  .scan-guide .tip {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    margin-top: 14px; white-space: nowrap; font-size: 13.5px; color: rgba(243,234,219,.85);
   }
-  @keyframes sweep { from { top: 15%; } to { top: 82%; } }
-  .scan-status { text-align: center; font-size: 13.5px; color: rgba(243,234,219,.7); padding: 12px; }
-  .scan-found {
-    position: absolute; left: 14px; right: 14px; bottom: 14px;
-    background: var(--cream); color: var(--ink); border: 2px solid var(--ink); border-radius: 16px; padding: 16px;
-    animation: slideup .3s ease both;
+  .scan-status { text-align: center; font-size: 13.5px; color: rgba(243,234,219,.7); padding: 12px 16px 0; min-height: 32px; }
+  .scan-actions {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 12px 16px calc(18px + env(safe-area-inset-bottom, 0px));
   }
-  .scan-found .sf-eyebrow { font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: var(--dill); font-weight: 700; }
-  .scan-found .sf-name { font-family: var(--serif); font-size: 21px; margin-top: 3px; }
-  .scan-found .sf-bb { font-size: 14px; color: var(--ink-soft); margin-top: 2px; }
+  .shutter {
+    flex: none; width: 62px; height: 62px; border-radius: 50%; cursor: pointer;
+    border: 4px solid var(--cream); background: rgba(243,234,219,.18);
+  }
+  .shutter:active { background: var(--cream); }
+  .scan-side {
+    background: none; border: 1.5px solid rgba(243,234,219,.5); color: var(--cream);
+    border-radius: 10px; padding: 10px 14px; font: 600 13.5px var(--sans); cursor: pointer;
+  }
+  .scan-side[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
   .scan-close { position: absolute; top: 14px; right: 14px; z-index: 5; background: rgba(243,234,219,.12); border: 1.5px solid rgba(243,234,219,.5); color: var(--cream); border-radius: 99px; width: 40px; height: 40px; font-size: 17px; cursor: pointer; }
+
+  /* ——— the photo kept beside the date field + calm form notes ——— */
+  .field-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .field-label-row .linklike { padding: 0 0 5px; flex: none; }
+  .photo-check { margin: 2px 0 8px; border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; background: #171614; }
+  .photo-check img { display: block; width: 100%; max-height: 150px; object-fit: contain; }
+  .form-note {
+    margin-top: 12px; padding: 10px 12px; border: 1.5px dashed var(--marmalade); border-radius: 10px;
+    font-size: 13.5px; color: var(--ink-soft); background: var(--amber-soft);
+  }
 
   /* ——— tabs ——— */
   nav.tabs {
@@ -646,16 +659,19 @@
     <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
   </div>
 
-  <!-- ============ SCANNER ============ -->
-  <div class="scanner" id="scanner" role="dialog" aria-modal="true" aria-label="Scan a date label">
-    <button class="scan-close" id="scan-close" aria-label="Close scanner">✕</button>
+  <!-- ============ SCANNER (real camera) ============ -->
+  <div class="scanner" id="scanner" role="dialog" aria-modal="true" aria-label="Camera scanner">
+    <button class="scan-close" id="scan-close" aria-label="Close the camera">✕</button>
     <div class="scan-stage">
-      <div class="fauxlabel" id="fauxlabel"></div>
-      <div class="viewfinder"><i></i><i></i><i></i><i></i></div>
-      <div class="scanline" id="scanline"></div>
-      <div class="scan-found" id="scan-found" hidden></div>
+      <video class="scan-video" id="scan-video" autoplay playsinline muted></video>
+      <div class="scan-guide barcode" id="scan-guide"><i></i><i></i><i></i><i></i><span class="tip" id="scan-tip"></span></div>
     </div>
-    <p class="scan-status" id="scan-status">Point at the date label or barcode…</p>
+    <p class="scan-status" id="scan-status" role="status"></p>
+    <div class="scan-actions">
+      <button class="scan-side" id="scan-torch" hidden aria-pressed="false">Light on</button>
+      <button class="shutter" id="scan-shutter" hidden aria-label="Take the photo"></button>
+      <button class="scan-side" id="scan-manual">Type it instead</button>
+    </div>
   </div>
 
   <div class="toast" id="toast" role="status"></div>
@@ -787,15 +803,10 @@
     ], calm: 'Evacuations are rare and usually short — a hotel or a relative’s sofa, not a wilderness. This list means you’d leave calm.' }
   };
 
-  var SCAN_QUEUE = [
-    { name: 'Crushed tomatoes', qty: '1 tin', due: days(613), pd: 0.5 },
-    { name: 'Kidney beans', qty: '1 tin', due: days(485), pd: 0.75 },
-    { name: 'UHT milk', qty: '1 L', due: days(88), pd: 0.25 },
-    { name: 'Ravioli', qty: '1 tin', due: days(710), pd: 1 }
-  ];
-  var scanIdx = 0;
-
   /* ————— shared helpers ————— */
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
   function statusOf(item) {
     if (!item.due) return { cls: 'fresh', label: 'keeps forever' };
     var d = daysUntil(item.due);
@@ -889,7 +900,7 @@
       .sort(function (a, b) { return daysUntil(a.due) - daysUntil(b.due); }).slice(0, 4);
     $('#usesoon').innerHTML = soon.length ? soon.map(function (i) {
       var st = statusOf(i);
-      return '<div class="usesoon-item"><div><div class="name">' + i.name + ' <span class="qty">' + i.qty + '</span></div><div class="when">' + metaOf(i) + '</div></div><span class="pill ' + st.cls + '">' + st.label + '</span></div>';
+      return '<div class="usesoon-item"><div><div class="name">' + esc(i.name) + ' <span class="qty">' + esc(i.qty) + '</span></div><div class="when">' + metaOf(i) + '</div></div><span class="pill ' + st.cls + '">' + st.label + '</span></div>';
     }).join('') : '<p style="font-size:14px;color:var(--ink-soft)">Nothing needs you right now. Enjoy that.</p>';
   }
 
@@ -912,8 +923,8 @@
       return '<div class="group-head"><span class="eyebrow">' + names[c] + '</span></div><ul class="grocery">' +
         list.map(function (i) {
           var st = statusOf(i);
-          return '<li><button class="item-row" data-item="' + i.id + '"><div class="item-main"><div class="item-name">' + i.name +
-            ' <span class="qty">' + i.qty + '</span>' + (i.tag ? ' <span class="pill tag">' + i.tag + '</span>' : '') +
+          return '<li><button class="item-row" data-item="' + i.id + '"><div class="item-main"><div class="item-name">' + esc(i.name) +
+            ' <span class="qty">' + esc(i.qty) + '</span>' + (i.tag ? ' <span class="pill tag">' + esc(i.tag) + '</span>' : '') +
             '</div><div class="item-meta">' + metaOf(i) + '</div></div><span class="pill ' + st.cls + '">' + st.label + '</span></button></li>';
         }).join('') + '</ul>';
     }).join('');
@@ -998,24 +1009,39 @@
   function sheetAdd() {
     openSheet(
       '<h2>Add to the shelf</h2><p class="sub">Two seconds with the camera, or type it in.</p>' +
-      '<button class="btn warm" id="s-scan"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V6a2 2 0 0 1 2-2h2M17 4h2a2 2 0 0 1 2 2v2M21 16v2a2 2 0 0 1-2 2h-2M7 20H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg> Scan the date label</button>' +
-      '<button class="btn ghost" id="s-manual" style="margin-top:10px">Type it in</button>'
+      '<button class="btn warm" id="s-scan"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V6a2 2 0 0 1 2-2h2M17 4h2a2 2 0 0 1 2 2v2M21 16v2a2 2 0 0 1-2 2h-2M7 20H5a2 2 0 0 1-2-2v-2M7 12h10"/></svg> Scan the barcode</button>' +
+      '<button class="btn ghost" id="s-manual" style="margin-top:10px">Type it in</button>' +
+      '<p class="hint" style="margin-top:12px">The camera reads the barcode to find the name — then photograph the printed date and check it. Nothing is saved until you say so.</p>'
     );
-    $('#s-scan').onclick = function () { closeSheet(); openScanner(); };
+    $('#s-scan').onclick = function () { closeSheet(); openScanner('barcode', {}); };
     $('#s-manual').onclick = function () { sheetManual(); };
   }
 
   function sheetManual(pre) {
     pre = pre || {};
+    var showScan = canScan();
+    var dateVal = pre.due || (pre.ocr && pre.ocr.iso) || '';
     openSheet(
       '<h2>' + (pre.name ? 'Check the details' : 'New item') + '</h2><p class="sub">We’ll remind you before the date.</p>' +
-      '<div class="field"><label for="f-name">Item</label><input id="f-name" value="' + (pre.name || '') + '" placeholder="Crushed tomatoes"></div>' +
-      '<div class="field"><label for="f-cat">Category</label><select id="f-cat"><option value="food">Food</option><option value="water"' + (pre.cat === 'water' ? ' selected' : '') + '>Water</option><option value="gear">Gear</option></select></div>' +
-      '<div class="field"><label for="f-qty">Quantity</label><input id="f-qty" value="' + (pre.qty || '') + '" placeholder="6 tins"></div>' +
-      '<div class="field" id="f-date-wrap"><label for="f-date">Best before</label><input id="f-date" type="date" value="' + (pre.due || '') + '"><p class="hint" id="f-hint"></p></div>' +
+      (pre.note ? '<p class="form-note">' + esc(pre.note) + '</p>' : '') +
+      '<div class="field"><div class="field-label-row"><label for="f-name">Item</label>' +
+        (showScan ? '<button type="button" class="linklike" id="f-scan-name">Scan the barcode</button>' : '') +
+      '</div><input id="f-name" value="' + esc(pre.name || '') + '" placeholder="Crushed tomatoes"></div>' +
+      '<div class="field"><label for="f-cat">Category</label><select id="f-cat">' +
+        [['food', 'Food'], ['water', 'Water'], ['gear', 'Gear']].map(function (o) {
+          return '<option value="' + o[0] + '"' + ((pre.cat || 'food') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
+        }).join('') + '</select></div>' +
+      '<div class="field"><label for="f-qty">Quantity</label><input id="f-qty" value="' + esc(pre.qty || '') + '" placeholder="6 tins"></div>' +
+      '<div class="field" id="f-date-wrap"><div class="field-label-row"><label for="f-date">Best before</label>' +
+        (showScan ? '<button type="button" class="linklike" id="f-scan-date">Photograph the date</button>' : '') +
+      '</div>' +
+      (pre.photo ? '<div class="photo-check"><img src="' + pre.photo + '" alt="Your photo of the date label"></div>' +
+        '<p class="hint" id="f-photo-note">' + esc(pre.ocr ? ocrNote(pre.ocr) : 'Reading the date from your photo…') + '</p>' : '') +
+      '<input id="f-date" type="date" value="' + dateVal + '"><p class="hint" id="f-hint"></p></div>' +
       '<div class="btnrow"><button class="btn ghost" id="f-cancel">Cancel</button><button class="btn" id="f-save">Put it on the shelf</button></div>'
     );
     var catEl = $('#f-cat'), dateEl = $('#f-date'), hint = $('#f-hint');
+    if (!pre.due && pre.ocr && pre.ocr.iso) dateEl.dataset.ocrFill = '1';
     function syncCat() {
       var isWater = catEl.value === 'water';
       $('#f-date-wrap label').textContent = isWater ? 'Filled on' : catEl.value === 'gear' ? 'Check by' : 'Best before';
@@ -1027,12 +1053,26 @@
       else if (dateEl.value) hint.textContent = 'Reminder set for ' + fmt(dateEl.value) + ', with a nudge a month before.';
       else hint.textContent = '';
     }
-    catEl.onchange = syncCat; dateEl.onchange = syncHint; syncHint();
+    catEl.onchange = syncCat; dateEl.onchange = syncHint;
+    dateEl.oninput = function () { delete dateEl.dataset.ocrFill; };
+    syncCat();
+    function grabForm() {
+      pre.name = $('#f-name').value.trim();
+      pre.cat = catEl.value;
+      pre.qty = $('#f-qty').value.trim();
+      if (dateEl.value && dateEl.dataset.ocrFill !== '1') pre.due = dateEl.value; else delete pre.due;
+      delete pre.note;
+    }
+    if (showScan) {
+      $('#f-scan-name').onclick = function () { grabForm(); closeSheet(); openScanner('barcode', pre); };
+      $('#f-scan-date').onclick = function () { grabForm(); delete pre.due; delete pre.ocr; delete pre.photo; closeSheet(); openScanner('date', pre); };
+    }
     $('#f-cancel').onclick = closeSheet;
     $('#f-save').onclick = function () {
       var name = $('#f-name').value.trim(); if (!name) { $('#f-name').focus(); return; }
       var cat = catEl.value, date = dateEl.value || days(365);
       var item = { id: state.nextId++, cat: cat, name: name, qty: $('#f-qty').value.trim() || '1' };
+      if (pre.barcode) item.barcode = pre.barcode;
       if (cat === 'water') {
         item.filled = date; item.due = addMonths(date, 6); item.kind = 'refresh';
         item.litres = parseFloat(item.qty) || 10;
@@ -1048,7 +1088,7 @@
     if (!item) return;
     var st = statusOf(item);
     openSheet(
-      '<h2>' + item.name + ' <span class="qty">' + item.qty + '</span></h2>' +
+      '<h2>' + esc(item.name) + ' <span class="qty">' + esc(item.qty) + '</span></h2>' +
       '<p class="sub">' + metaOf(item) + ' · <span class="pill ' + st.cls + '">' + st.label + '</span></p>' +
       (item.kind === 'bb' ? '<button class="btn warm" id="i-rotate">Eaten &amp; replaced — fresh date</button>' :
         item.kind === 'refresh' ? '<button class="btn warm" id="i-rotate">Refreshed today — new 6 months</button>' :
@@ -1107,31 +1147,360 @@
     $('#r-close').onclick = closeSheet;
   }
 
-  /* ————— SCANNER ————— */
-  var scanTimer;
-  function openScanner() {
-    var p = SCAN_QUEUE[scanIdx % SCAN_QUEUE.length];
-    $('#scanner').classList.add('open');
-    $('#scan-found').hidden = true;
-    $('#scanline').style.display = 'block';
-    $('#scan-status').textContent = 'Point at the date label or barcode…';
-    $('#fauxlabel').innerHTML = '<div class="fl-name">' + p.name + '</div><div class="fl-bb">BEST BEFORE · ' + fmt(p.due).toUpperCase() + '</div>';
-    scanTimer = setTimeout(function () {
-      $('#scanline').style.display = 'none';
-      $('#scan-status').textContent = 'Got it.';
-      var f = $('#scan-found');
-      f.innerHTML = '<div class="sf-eyebrow">Found on the label</div><div class="sf-name">' + p.name + '</div><div class="sf-bb">Best before ' + fmt(p.due) + '</div>' +
-        '<div class="btnrow"><button class="btn ghost slim" id="sc-again">Scan again</button><button class="btn warm slim" id="sc-add" style="flex:1">Looks right — add it</button></div>';
-      f.hidden = false;
-      $('#sc-add').onclick = function () {
-        state.items.push({ id: state.nextId++, cat: 'food', name: p.name, qty: p.qty, due: p.due, kind: 'bb', pd: p.pd });
-        save(); scanIdx++; renderAll(); closeScanner();
-        toast(p.name + ' added — we’ll nudge you before ' + fmt(p.due) + '.');
-      };
-      $('#sc-again').onclick = function () { scanIdx++; closeScanner(); openScanner(); };
-    }, 2000);
+  /* ————— SCANNER — real camera: barcode → name, photo → best-before date —————
+     Barcode: the phone's own BarcodeDetector where it exists (Android Chrome),
+     otherwise local ZXing WebAssembly (vendor/zxing, loaded only when scanning).
+     Date: photograph the printed date; the photo stays beside the date field and
+     local Tesseract OCR (vendor/tesseract, loaded on first use) suggests a date.
+     Every reading lands in the form for checking — nothing is saved by the camera. */
+  var VENDOR_ZXING = 'vendor/zxing/', VENDOR_TESS = 'vendor/tesseract/';
+  var cam = { stream: null, track: null, mode: null, loopId: 0, running: false, pre: null, torchOn: false };
+  var barcodeEngine = null, ocrWorkerPromise = null, dynImport = null;
+  try { dynImport = new Function('u', 'return import(u)'); } catch (e) { dynImport = null; }
+
+  function canScan() {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.isSecureContext);
   }
-  function closeScanner() { clearTimeout(scanTimer); $('#scanner').classList.remove('open'); }
+  function stopTracks(s) { if (s) s.getTracks().forEach(function (t) { t.stop(); }); }
+
+  function openScanner(mode, pre) {
+    cam.pre = pre || {};
+    if (!canScan()) {
+      cam.pre.note = 'This browser can’t open the camera (it needs a secure https page), so typing it is.';
+      sheetManual(cam.pre); return;
+    }
+    cam.mode = mode; cam.running = false;
+    $('#scan-guide').className = 'scan-guide ' + mode;
+    $('#scan-tip').textContent = mode === 'barcode' ? 'Fit the barcode in the frame' : 'Fit the printed date in the frame';
+    $('#scan-shutter').hidden = mode !== 'date';
+    $('#scan-torch').hidden = true;
+    $('#scan-status').textContent = 'Starting the camera…';
+    $('#scanner').classList.add('open');
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+      audio: false
+    }).then(function (stream) {
+      if (!$('#scanner').classList.contains('open')) { stopTracks(stream); return; }
+      cam.stream = stream; cam.track = stream.getVideoTracks()[0];
+      var v = $('#scan-video'); v.srcObject = stream;
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      setupTorch();
+      if (mode === 'barcode') {
+        $('#scan-status').textContent = 'Point the camera at the barcode.';
+        startBarcodeLoop();
+      } else {
+        $('#scan-status').textContent = 'Line up the best-before date, then take the photo.';
+        getOcrWorker().catch(function () {}); // start the one-time OCR download while she frames the shot
+      }
+    }).catch(function (err) {
+      var name = (err && err.name) || '';
+      closeScanner();
+      cam.pre.note =
+        name === 'NotAllowedError' || name === 'SecurityError' ? 'The camera is blocked for this page, so typing it is. To scan next time, allow the camera for this site in your browser settings and tap scan again.'
+        : name === 'NotFoundError' || name === 'OverconstrainedError' ? 'No camera we can reach on this device — typing works just as well.'
+        : name === 'NotReadableError' ? 'The camera is busy in another app. Close that one and try again — or type it in now.'
+        : 'The camera didn’t start. Typing works just as well.';
+      sheetManual(cam.pre);
+    });
+  }
+
+  function closeScanner() {
+    cam.running = false; clearTimeout(cam.loopId);
+    stopTracks(cam.stream); cam.stream = null; cam.track = null;
+    var v = $('#scan-video'); if (v) v.srcObject = null;
+    $('#scan-guide').classList.remove('hit');
+    $('#scanner').classList.remove('open');
+  }
+  function leaveScanner() { // close button / Escape — never a dead end
+    var p = cam.pre || {};
+    closeScanner();
+    if (p.name || p.qty || p.due || p.photo || p.barcode) sheetManual(p); else sheetAdd();
+  }
+
+  function setupTorch() {
+    var btn = $('#scan-torch'), track = cam.track;
+    var caps = track && track.getCapabilities ? track.getCapabilities() : null;
+    if (!caps || !caps.torch) { btn.hidden = true; return; }
+    cam.torchOn = false; btn.textContent = 'Light on'; btn.setAttribute('aria-pressed', 'false'); btn.hidden = false;
+    btn.onclick = function () {
+      var on = !cam.torchOn;
+      track.applyConstraints({ advanced: [{ torch: on }] }).then(function () {
+        cam.torchOn = on; btn.textContent = on ? 'Light off' : 'Light on'; btn.setAttribute('aria-pressed', String(on));
+      }, function () { btn.hidden = true; });
+    };
+  }
+
+  function ensureBarcodeEngine() {
+    if (barcodeEngine) return Promise.resolve(barcodeEngine);
+    var probe = ('BarcodeDetector' in window)
+      ? window.BarcodeDetector.getSupportedFormats().catch(function () { return []; })
+      : Promise.resolve([]);
+    return probe.then(function (fmts) {
+      if (fmts && fmts.indexOf('ean_13') > -1) {
+        var want = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'].filter(function (f) { return fmts.indexOf(f) > -1; });
+        barcodeEngine = { kind: 'native', det: new window.BarcodeDetector({ formats: want }) };
+        return barcodeEngine;
+      }
+      return loadWasmEngine();
+    });
+  }
+  function loadWasmEngine() {
+    if (!dynImport) return Promise.reject(new Error('no dynamic import'));
+    return dynImport('./' + VENDOR_ZXING + 'es/reader/index.js').then(function (z) {
+      z.prepareZXingModule({ overrides: { locateFile: function (path, prefix) {
+        return /\.wasm$/.test(path) ? VENDOR_ZXING + path : prefix + path;
+      } } });
+      barcodeEngine = { kind: 'wasm', read: z.readBarcodes };
+      return barcodeEngine;
+    });
+  }
+
+  function startBarcodeLoop() {
+    cam.running = true;
+    ensureBarcodeEngine().then(function (engine) {
+      if (!cam.running) return;
+      var v = $('#scan-video');
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+      var errors = 0;
+      function tick() {
+        if (!cam.running) return;
+        detectFrame(engine, v, canvas, ctx).then(function (code) {
+          if (!cam.running) return;
+          if (code) { onBarcodeFound(code); return; }
+          cam.loopId = setTimeout(tick, 150);
+        }, function () {
+          if (!cam.running) return;
+          errors++;
+          if (engine.kind === 'native' && errors >= 3) { // a phone that claims BarcodeDetector but can't deliver
+            loadWasmEngine().then(
+              function (w) { engine = w; errors = 0; cam.loopId = setTimeout(tick, 150); },
+              function () { $('#scan-status').textContent = 'The barcode reader isn’t working on this phone — “Type it instead” below.'; }
+            );
+            return;
+          }
+          cam.loopId = setTimeout(tick, 250);
+        });
+      }
+      tick();
+    }, function () {
+      $('#scan-status').textContent = 'The barcode reader needs one small download the first time, and it couldn’t load. Check the connection and reopen the scanner — or type it in.';
+    });
+  }
+
+  function detectFrame(engine, v, canvas, ctx) {
+    if (!v.videoWidth) return Promise.resolve(null);
+    if (engine.kind === 'native') {
+      return engine.det.detect(v).then(function (codes) {
+        var hit = (codes || []).filter(function (c) { return /^\d{8,14}$/.test(c.rawValue); })[0];
+        return hit ? hit.rawValue : null;
+      });
+    }
+    var w = Math.min(960, v.videoWidth);
+    var h = Math.round(v.videoHeight * w / v.videoWidth) || 1;
+    canvas.width = w; canvas.height = h;
+    ctx.drawImage(v, 0, 0, w, h);
+    return engine.read(ctx.getImageData(0, 0, w, h), { formats: ['EANUPC', 'Code128'], tryHarder: true })
+      .then(function (res) {
+        var hit = (res || []).filter(function (r) { return r.isValid && /^\d{8,14}$/.test(r.text); })[0];
+        return hit ? hit.text : null;
+      });
+  }
+
+  function onBarcodeFound(code) {
+    cam.running = false; clearTimeout(cam.loopId);
+    if (navigator.vibrate) { try { navigator.vibrate(40); } catch (e) {} }
+    $('#scan-guide').classList.add('hit');
+    $('#scan-status').textContent = 'Found it — looking the product up…';
+    var pre = cam.pre; pre.barcode = code;
+    lookupProduct(code).then(function (r) {
+      closeScanner();
+      if (r.name) {
+        pre.name = r.name;
+        if (r.qty && !pre.qty) pre.qty = r.qty;
+        pre.note = 'Found it from the barcode. Check the name, then add the best-before date — the camera can read that too.';
+      } else if (r.miss) {
+        pre.note = 'Barcode ' + code + ' isn’t in the product library — common with store brands. Type the name and you’re done.';
+      } else {
+        pre.note = 'The product lookup needs internet and couldn’t be reached just now. The barcode is noted — type the name and carry on.';
+      }
+      sheetManual(pre);
+    });
+  }
+
+  function lookupProduct(code) {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 7000) : 0;
+    return fetch('https://world.openfoodfacts.org/api/v2/product/' + encodeURIComponent(code) + '?fields=product_name,brands,quantity',
+      ctl ? { signal: ctl.signal } : {})
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        clearTimeout(timer);
+        if (!d || d.status !== 1 || !d.product) return { miss: true };
+        var p = d.product;
+        var brand = (p.brands || '').split(',')[0].trim();
+        var name = (p.product_name || '').trim();
+        var full = !name ? brand : (!brand || name.toLowerCase().indexOf(brand.toLowerCase()) > -1) ? name : brand + ' ' + name;
+        if (!full) return { miss: true };
+        if (full.length > 60) full = full.slice(0, 59).trim() + '…';
+        return { name: full, qty: (p.quantity || '').trim() };
+      })
+      .catch(function () { clearTimeout(timer); return { offline: true }; });
+  }
+
+  /* date photo: crop what's inside the frame guide, keep it beside the date field, try to read it */
+  function guideCropRect(v) {
+    var sr = $('.scan-stage').getBoundingClientRect();
+    var gr = $('#scan-guide').getBoundingClientRect();
+    var scale = Math.max(sr.width / v.videoWidth, sr.height / v.videoHeight);
+    var offX = (v.videoWidth - sr.width / scale) / 2;
+    var offY = (v.videoHeight - sr.height / scale) / 2;
+    var pad = 14;
+    var x = Math.max(0, offX + (gr.left - sr.left - pad) / scale);
+    var y = Math.max(0, offY + (gr.top - sr.top - pad) / scale);
+    var w = Math.min(v.videoWidth - x, (gr.width + pad * 2) / scale);
+    var h = Math.min(v.videoHeight - y, (gr.height + pad * 2) / scale);
+    return { x: Math.round(x), y: Math.round(y), w: Math.max(1, Math.round(w)), h: Math.max(1, Math.round(h)) };
+  }
+
+  function takeDatePhoto() {
+    var v = $('#scan-video');
+    if (!cam.stream || !v.videoWidth) return;
+    var c = guideCropRect(v);
+    var cap = document.createElement('canvas');
+    cap.width = c.w; cap.height = c.h;
+    cap.getContext('2d').drawImage(v, c.x, c.y, c.w, c.h, 0, 0, c.w, c.h);
+    var pre = cam.pre;
+    pre.photo = cap.toDataURL('image/jpeg', 0.85);
+    delete pre.ocr; delete pre.due;
+    closeScanner();
+    sheetManual(pre); // photo is already visible while the reading happens
+    runOcr(cap, pre);
+  }
+
+  function prepForOcr(src) {
+    var scale = Math.max(1, 1100 / src.width);
+    var c = document.createElement('canvas');
+    c.width = Math.round(src.width * scale); c.height = Math.round(src.height * scale);
+    var ctx = c.getContext('2d');
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(src, 0, 0, c.width, c.height);
+    var img = ctx.getImageData(0, 0, c.width, c.height), d = img.data, i, g, min = 255, max = 0;
+    for (i = 0; i < d.length; i += 4) {
+      g = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) | 0;
+      d[i] = g; if (g < min) min = g; if (g > max) max = g;
+    }
+    var range = Math.max(48, max - min);
+    for (i = 0; i < d.length; i += 4) {
+      g = (d[i] - min) * 255 / range; g = g < 0 ? 0 : g > 255 ? 255 : g | 0;
+      d[i] = d[i + 1] = d[i + 2] = g;
+    }
+    ctx.putImageData(img, 0, 0);
+    return c;
+  }
+
+  function getOcrWorker() {
+    if (ocrWorkerPromise) return ocrWorkerPromise;
+    var base = new URL(VENDOR_TESS, location.href).href;
+    ocrWorkerPromise = (window.Tesseract ? Promise.resolve() : loadScript(VENDOR_TESS + 'tesseract.min.js'))
+      .then(function () {
+        return window.Tesseract.createWorker('eng', 1, {
+          workerPath: base + 'worker.min.js',
+          corePath: base,
+          langPath: base + 'lang'
+        });
+      })
+      .then(function (w) {
+        return w.setParameters({
+          tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ./-:',
+          tessedit_pageseg_mode: '6'
+        }).then(function () { return w; });
+      });
+    ocrWorkerPromise.catch(function () { ocrWorkerPromise = null; });
+    return ocrWorkerPromise;
+  }
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src; s.onload = resolve;
+      s.onerror = function () { reject(new Error('could not load ' + src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function runOcr(canvas, pre) {
+    getOcrWorker().then(function (w) {
+      return w.recognize(prepForOcr(canvas)).then(function (out) {
+        pre.ocr = parseBestBefore(out && out.data && out.data.text) || { fail: true };
+        applyOcrToForm(pre);
+      });
+    }).catch(function () {
+      ocrWorkerPromise = null; // let a later attempt rebuild the worker
+      pre.ocr = { fail: true };
+      applyOcrToForm(pre);
+    });
+  }
+
+  function ocrNote(o) {
+    if (!o || o.fail) return 'Couldn’t read the date this time — stamped dates are stubborn. It’s in your photo above: type what you see.';
+    if (o.monthOnly) return 'The label gives month and year (' + o.raw + '), so this is set to the last day: ' + fmt(o.iso) + '. Check it against your photo.';
+    return 'Read from your photo: ' + o.raw + ' → ' + fmt(o.iso) + '. Check it against the picture before saving.';
+  }
+  function applyOcrToForm(pre) {
+    var dateEl = $('#f-date'), note = $('#f-photo-note');
+    if (!dateEl || !note) return; // the form moved on — leave things be
+    if (pre.ocr && pre.ocr.iso && (!dateEl.value || dateEl.dataset.ocrFill === '1')) {
+      dateEl.value = pre.ocr.iso; dateEl.dataset.ocrFill = '1';
+      try { dateEl.dispatchEvent(new Event('change')); } catch (e) {}
+    }
+    note.textContent = ocrNote(pre.ocr);
+  }
+
+  /* RS_DATE_PARSE_BEGIN — European date reading; tests extract this block by the markers */
+  function parseBestBefore(text) {
+    if (!text) return null;
+    var up = ' ' + String(text).toUpperCase().replace(/\s+/g, ' ') + ' ';
+    var MON = { JAN: 1, FEB: 2, MAR: 3, MARS: 3, APR: 4, MAJ: 5, MAY: 5, MAI: 5, JUN: 6, JUNI: 6, JUL: 7, JULI: 7,
+      AUG: 8, SEP: 9, SEPT: 9, OKT: 10, OCT: 10, NOV: 11, DEC: 12, DES: 12,
+      TAMMI: 1, HELMI: 2, MAALIS: 3, HUHTI: 4, TOUKO: 5, KESÄ: 6, KESA: 6, HEINÄ: 7, HEINA: 7, ELO: 8, SYYS: 9, LOKA: 10, MARRAS: 11, JOULU: 12 };
+    var found = [], m, re;
+    function pad2(n) { return (n < 10 ? '0' : '') + n; }
+    function push(y, mo, d, raw, pri) {
+      y = +y; mo = +mo;
+      if (y < 100) y += 2000;
+      if (y < 2015 || y > 2059 || mo < 1 || mo > 12) return;
+      var last = new Date(y, mo, 0).getDate();
+      var monthOnly = d == null;
+      d = monthOnly ? last : +d;
+      if (d < 1 || d > last) return;
+      found.push({ iso: y + '-' + pad2(mo) + '-' + pad2(d), raw: raw.replace(/^\W+|\W+$/g, ''), monthOnly: monthOnly, full: !monthOnly, pri: pri });
+    }
+    // 2027-03-10 · 2027.03.10 · 2027/03/10
+    re = /(?:^|\D)(20[1-5]\d)[.\-\/ ](\d{1,2})[.\-\/ ](\d{1,2})(?!\d)/g;
+    while ((m = re.exec(up))) push(m[1], m[2], m[3], m[0], 2);
+    // 10.03.2027 · 10/03/27 · 10-03-2027 · 10 03 2027 — day first, never American month-first
+    re = /(?:^|\D)(\d{1,2})[.\-\/ ](\d{1,2})[.\-\/ ]((?:20)?\d{2})(?!\d)/g;
+    while ((m = re.exec(up))) push(m[3], m[2], m[1], m[0], 2);
+    // 27.03.10 — two-digit year first; only believable when it lands in the valid window
+    re = /(?:^|\D)(\d{2})[.\-\/ ](\d{1,2})[.\-\/ ](\d{1,2})(?!\d)/g;
+    while ((m = re.exec(up))) push(m[1], m[2], m[3], m[0], 1);
+    // MAR 2027 · 10 MAR 2027 · BÄST FÖRE MARS 2027 · MARRASKUU 2027 (longest month tokens first)
+    re = /(?:^|[^A-ZÅÄÖ])(?:(\d{1,2})[. ]{0,2})?(TAMMI|HELMI|MAALIS|HUHTI|TOUKO|KESÄ|KESA|HEINÄ|HEINA|MARRAS|JOULU|SYYS|LOKA|ELO|MARS|JUNI|JULI|SEPT|JAN|FEB|MAR|APR|MAJ|MAY|MAI|JUN|JUL|AUG|SEP|OKT|OCT|NOV|DEC|DES)[A-ZÅÄÖ]*[. ]{0,3}((?:20)?\d{2})(?!\d)/g;
+    while ((m = re.exec(up))) push(m[3], MON[m[2]], m[1] || null, m[0], 2);
+    // 03.2027 · 03/2027 · 03 2027 — month + year → the last day of that month
+    re = /(?:^|[^\d.])(\d{1,2})[.\-\/ ](20[1-5]\d)(?!\d)/g;
+    while ((m = re.exec(up))) push(m[2], m[1], null, m[0], 2);
+    // 2027-03 — year then month
+    re = /(?:^|\D)(20[1-5]\d)[.\-\/ ](\d{1,2})(?![.\-\/]?\d)/g;
+    while ((m = re.exec(up))) push(m[1], m[2], null, m[0], 2);
+    if (!found.length) return null;
+    var pool = found.filter(function (f) { return f.full; });
+    if (!pool.length) pool = found;
+    // day-first beats year-first on ties; then the latest date wins (best-before sits after production dates)
+    pool.sort(function (a, b) { return (b.pri - a.pri) || (a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : 0); });
+    return { iso: pool[0].iso, raw: pool[0].raw, monthOnly: pool[0].monthOnly };
+  }
+  /* RS_DATE_PARSE_END */
 
   /* ————— NAV & EVENTS ————— */
   function goTab(name) {
@@ -1184,10 +1553,16 @@
   $('#btn-house').onclick = sheetHouse;
   $('#btn-ritual').onclick = sheetRitual;
   $('#guide-back').onclick = function () { $('#guide').classList.remove('open'); };
-  $('#scan-close').onclick = closeScanner;
+  $('#scan-close').onclick = leaveScanner;
+  $('#scan-manual').onclick = function () { var p = cam.pre || {}; closeScanner(); sheetManual(p); };
+  $('#scan-shutter').onclick = takeDatePhoto;
+  window.addEventListener('pagehide', closeScanner); // never leave the camera running behind a closed tab
   $('#btn-reset').onclick = function () { state = seed(); save(); renderAll(); toast('Demo reset — fresh shelf.'); };
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { closeSheet(); closeScanner(); $('#guide').classList.remove('open'); }
+    if (e.key === 'Escape') {
+      if ($('#scanner').classList.contains('open')) { leaveScanner(); return; }
+      closeSheet(); $('#guide').classList.remove('open');
+    }
   });
 
   function renderAll() { renderToday(); renderPantry(); renderCheck(); renderMaster(); renderHouse(); renderSteady(); }

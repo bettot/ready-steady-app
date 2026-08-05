@@ -1,6 +1,7 @@
 # Friend-test script — Ready & Steady app prototype
 Send with the app link: **https://bettot.github.io/ready-steady-app/**
-(backup link, same app: https://claude.ai/code/artifact/5f105b33-299c-4265-991f-9ff950fbf1cc)
+(backup link, same app: https://claude.ai/code/artifact/5f105b33-299c-4265-991f-9ff950fbf1cc —
+but the camera scanner only works on the main link; the artifact page blocks camera access)
 
 ---
 
@@ -15,7 +16,8 @@ Vill du provklicka i 10 minuter? Öppna länken på mobilen:
 [LÄNK]
 
 Tre saker att prova:
-1. Lägg till något i skafferiet — testa "skanna" en konservburk
+1. Lägg till något i skafferiet — skanna streckkoden på en riktig burk och fota
+   bäst före-datumet (säg ja när mobilen frågar om kameran; det går också att skriva in)
 2. Gör 15-minuterskollen under Checklists
 3. Låtsas att strömmen precis gick — hitta vad du ska göra
 
@@ -44,7 +46,8 @@ Could you tap around for 10 minutes? Open the link on your phone:
 [LINK]
 
 Three things to try:
-1. Add something to the Pantry — try "scanning" a tin
+1. Add something to the Pantry — scan the barcode on a real tin and photograph
+   its best-before date (say yes when your phone asks about the camera; typing works too)
 2. Do the 15-minute check under Checklists
 3. Pretend the power just went out — find what to do
 
