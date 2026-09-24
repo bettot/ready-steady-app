@@ -294,6 +294,14 @@
   .numbers a:last-child { border-bottom: none; }
   .numbers .num { font-weight: 700; font-size: 26px; white-space: nowrap; }
   .numbers .what { font-size: 15px; color: var(--ink-soft); text-align: right; }
+  .radio-block { margin-top: 6px; padding-top: 14px; border-top: 2px solid var(--forest); }
+  .radio-block .radio-label { font-size: 15px; font-weight: 700; color: var(--forest); }
+  .radio-block .radio-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+  .radio-block .num { font-weight: 700; font-size: 26px; white-space: nowrap; display: inline-flex; align-items: center; gap: 10px; }
+  .radio-block .num svg { width: 26px; height: 26px; stroke: var(--forest); }
+  .radio-block .what { font-size: 15px; color: var(--ink-soft); text-align: right; }
+  .radio-block p { font-size: 16px; line-height: 1.5; margin-top: 10px; color: var(--ink); }
+  .radio-block .radio-tip { background: var(--sage); color: var(--forest); border-radius: 14px; padding: 12px 14px; font-size: 15px; font-weight: 600; }
   .steady-list { margin-top: 4px; }
   .steady-list li { font-size: 16px; padding: 9px 0 9px 2px; list-style: none; border-bottom: 1px solid var(--forest-line); }
   .steady-list li:last-child { border-bottom: none; }
@@ -614,6 +622,15 @@
           <a href="tel:112"><span class="num">112</span><span class="what">Emergency — life or property in danger</span></a>
           <a href="tel:113 13"><span class="num">113 13</span><span class="what">Information during accidents &amp; crises</span></a>
           <a href="tel:1177"><span class="num">1177</span><span class="what">Health advice, around the clock</span></a>
+        </div>
+        <div class="radio-block">
+          <span class="radio-label">Radio in a crisis</span>
+          <div class="radio-head">
+            <span class="num"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2.5"/><path d="M7 8 16 3.5"/><circle cx="15.5" cy="14" r="2.5"/><path d="M6.5 12.5h3M6.5 15.5h3"/></svg>P4</span>
+            <span class="what">Sveriges Radio — the emergency channel</span>
+          </div>
+          <p>Official warnings, called <b>VMA</b>, are read out on P4. If you hear the outdoor sirens: <b>go inside, close windows and doors, turn on P4.</b></p>
+          <p class="radio-tip">P4 has a different frequency depending on where you live. Look yours up today and write it on the radio.</p>
         </div>
       </div>
 
